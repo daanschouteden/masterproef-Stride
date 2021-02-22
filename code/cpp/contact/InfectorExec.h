@@ -39,6 +39,6 @@ typedef void(InfectorExec)(ContactPool& pool, const AgeContactProfile& profile,
 						   double cnt_reduction_work, double cnt_reduction_other, double cnt_reduction_school,
 						   double cnt_reduction_intergeneration, unsigned int cnt_reduction_intergeneration_cutoff,
 						   std::shared_ptr<Population> population, double m_cnt_intensity_householdCluster,
-						   std::vector<long>& times, std::vector<int>& counts);
+						   std::vector<long>& times, std::vector<int>& counts, std::mt19937& mt_gen);
 
 } // namespace stride

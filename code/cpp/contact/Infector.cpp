@@ -251,9 +251,11 @@ inline double CustomGetContactProbability(double reference_num_contacts, const s
         return contactProb;
 }
 
+
 } // namespace
 
 namespace stride {
+
 
 //-------------------------------------------------------------------------------------------------
 // Definition for ContactLogMode::Contacts,
@@ -266,7 +268,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 								 double cnt_reduction_work, double cnt_reduction_other, double cnt_reduction_school,
 								 double cnt_reduction_intergeneration, unsigned int cnt_reduction_intergeneration_cutoff,
 								 std::shared_ptr<Population> population, double m_cnt_intensity_householdCluster,
-                                                                 std::vector<long>& times, std::vector<int>& counts)
+                                                                 std::vector<long>& times, std::vector<int>& counts, std::mt19937& mt_gen)
 {
         using LP = LOG_POLICY<LL>;
 
@@ -276,6 +278,9 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         const auto  pSize    = pMembers.size();         // const auto  pSize    = pool.PeopleInPool();
         const auto  tProb    = transProfile.GetProbability();
 
+        const bool community = (pType == Id::PrimaryCommunity || pType == Id::SecondaryCommunity);
+        const bool workplace = pType == Id::Workplace;
+
         if (pSize >= 1500) {
                 cout << "ffs: " << pSize << endl;
                 return;
@@ -283,9 +288,9 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 
         auto start = high_resolution_clock::now();
 
+
         // Intervals without sampling
-        if (false && pSize <= 125 && pType == Id::Workplace) {
-        // if (false && pType == Id::SecondaryCommunity) {
+        if (false) {
 
                 const auto pIntervalAmounts = pool.SortMembersByAgeIntervalsYO();
                 const auto pNumberOfIntervals = pIntervalAmounts.size();
@@ -469,8 +474,8 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         }
         
         // Sampling also in same interval
+        else if (pSize >= 100) {
         //else if (pSize >= 100) {
-        else if (false && pType == Id::Workplace) {
 
                 const auto pIntervalAmounts = pool.SortMembersByAgeIntervalsYO();
                 const auto pNumberOfIntervals = pIntervalAmounts.size();
@@ -853,8 +858,8 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         }
         
         // Sampling
+        else if (false){
         //else if(pSize >= 100) {
-        else if(pSize >= 100){ //&& (pType == Id::PrimaryCommunity || pType == Id::SecondaryCommunity)) {
 
                 const auto pIntervalAmounts = pool.SortMembersByAgeIntervalsYO();
                 const auto pNumberOfIntervals = pIntervalAmounts.size();
@@ -1094,8 +1099,6 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         
         // Sampling with unordered_set
         else if (false) {
-        //else if (pSize >= 100) {
-        // else if(false && pType == Id::Workplace) {
                 const auto pIntervalAmounts = pool.SortMembersByAgeIntervalsYO();
                 const auto pNumberOfIntervals = pIntervalAmounts.size();
 
@@ -1416,7 +1419,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
          
         auto stop = high_resolution_clock::now();
 
-        if (false && pType == Id::PrimaryCommunity) {
+        if (pType == Id::PrimaryCommunity) {
                 auto duration = duration_cast<microseconds>(stop - start);
                 times[pSize] += duration.count();
                 counts[pSize]++;
@@ -1435,8 +1438,8 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
 								   double cnt_reduction_work, double cnt_reduction_other, double cnt_reduction_school,
 								   double cnt_reduction_intergeneration, unsigned int cnt_reduction_intergeneration_cutoff,
 								   std::shared_ptr<Population> population, double m_cnt_intensity_householdCluster,
-                                                                   std::vector<long>& times, std::vector<int>& counts)
-{
+                                                                   std::vector<long>& times, std::vector<int>& counts, std::mt19937& mt_gen)
+{    
         using LP = LOG_POLICY<LL>;
 
 
@@ -1555,14 +1558,13 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
         }
         
         // Sampling (only contacts, transmissions individually)   
-        else if(false && pSize >= 100) {
-        //pType == Id::Workplace || pType == Id::SecondaryCommunity || pType == Id::PrimaryCommunity) {          
+        else if(pSize >= 100) {
                 const auto pIntervalAmounts = pool.SortSusceptiblesByAgeIntervalsYO(num_cases);
                 const auto pNumberOfIntervals = pIntervalAmounts.size();
-
+                /*
                 std::random_device rd;
-	        boost::mt19937 gen(rd());
-
+	        std::mt19937 gen(rd());
+                */
                 //const auto totalIntervalAmounts = pool.CountTotalIntervals();
                 /*
                 for (unsigned int interval = 0; interval < pNumberOfIntervals; interval++) {
@@ -1571,20 +1573,20 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
                 cout << endl;
                 */
                 // Sanity check
+                /*
                 int counter = 0;
                 for (unsigned int interval = 0; interval < pNumberOfIntervals; interval++) {
-                        /*
                         for (int i = 0; i < pIntervalAmounts[interval]; i++) {
                                 if (!pMembers[i+counter+num_cases]->GetHealth().IsSusceptible())
                                         cout << "oei";
                                 cout << pMembers[i+counter+num_cases]->GetAge() << "\t";
                         }
                         cout << endl;
-                        */
                         counter += pIntervalAmounts[interval];
                 }
                 if (counter != pImmune-num_cases)
                         cout << "Susceptible sorting is wrong" << endl;
+                */
 
                  // match infectious and susceptible members, skip last part (immune members)
                 for (size_t i_infected = 0; i_infected < num_cases; i_infected++) {
@@ -1607,40 +1609,17 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
 
                                         double reference_num_contacts = min(infected_contacts, interval_contacts);
 
-                                        // initiate a contact adjustment factor, to account for physical distancing and/or contact intensity
-                                        double cnt_adjustment_factor = 1;
-                                        // account for physical distancing at work and in the community
-                                        if(pType == Id::Workplace){
-                                                cnt_adjustment_factor = (1-cnt_reduction_work);
-                                        }
-                                        // account for physical distancing in the community
-                                        else if((pType == Id::PrimaryCommunity || pType == Id::SecondaryCommunity)){
-                                                // apply inter-generation distancing factor if age cutoff is > 0 and at least one age is > cutoff
-                                                if((cnt_reduction_intergeneration > 0) && 
-                                                ((pMembers[index]->GetAge() > cnt_reduction_intergeneration_cutoff) || (p1->GetAge() > cnt_reduction_intergeneration_cutoff))){
-                                                        cnt_adjustment_factor = (1-cnt_reduction_intergeneration);
-
-                                                } else {
-                                                        // apply uniform community distancing
-                                                        cnt_adjustment_factor = (1-cnt_reduction_other);
-                                                }
-                                        }
+                                        double contactProb = CustomGetContactProbability(reference_num_contacts, pSize, pType,
+                                                                EffectiveAge(static_cast<unsigned int>(pMembers[i_infected]->GetAge())),
+                                                                EffectiveAge(static_cast<unsigned int>(pMembers[index]->GetAge())),
+                                                                cnt_reduction_work, cnt_reduction_intergeneration, cnt_reduction_other,
+                                                                cnt_reduction_intergeneration_cutoff);
                                         
-                                        reference_num_contacts *= cnt_adjustment_factor;
-                                        double contactProb = reference_num_contacts / (pSize-1);
-
-                                        //double dif = totalIntervalAmounts[interval]/pIntervalAmounts[interval];
-                                        //contactProb = contactProb * dif;
-
-                                        if (contactProb >= 1) {
-                                                contactProb = 0.999;
-                                        }
-                                        
-                                        boost::binomial_distribution<int> distr(people_in_interval, contactProb);
+                                        std::binomial_distribution<int> distr(people_in_interval, contactProb);
                                         
 
                                         // The number of people 1 infected will have contact with and transmit disease
-                                        int sampleSize = distr(gen);
+                                        int sampleSize = distr(mt_gen);
                                         /*
                                         cout << "ref_num_contacts: " << reference_num_contacts << endl;
                                         cout << "People in interval: " << people_in_interval << endl;
@@ -1740,14 +1719,14 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
         }
         
         // Sampling + sorting both infectious and susceptibles (only contacts, transmissions individually)   
-        else if(pSize >= 100) {
+        else if(false && pSize >= 100) {
                 const auto pSusceptiblesIntervalAmounts = pool.SortSusceptiblesByAgeIntervalsYO(num_cases);
                 const auto pInfectiousIntervalAmounts = pool.SortInfectiousByAgeIntervalsYO(num_cases);
                 const auto pNumberOfIntervals = pSusceptiblesIntervalAmounts.size();
-
+                /*
                 std::random_device rd;
                 std::mt19937 gen(rd());
-
+                */
                 //const auto totalIntervalAmounts = pool.CountTotalIntervals();
 
                 // Sanity check
@@ -1764,6 +1743,17 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
                 }
                 if (counter != pImmune-num_cases)
                         cout << "Susceptible sorting is wrong" << endl;
+
+                int counter = 0;
+                for (unsigned int interval = 0; interval < pNumberOfIntervals; interval++) {
+                        for (int i = 0; i < pInfectiousIntervalAmounts[interval]; i++) {
+                                if (!pMembers[i+counter]->GetHealth().IsInfectious())
+                                        cout << "error";
+                                cout << pMembers[i+counter]->GetAge() << "\t";
+                        }
+                        cout << endl;
+                        counter += pInfectiousIntervalAmounts[interval];
+                }
                 */
                 
                 int index1 = 0;
@@ -1800,7 +1790,7 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
                                         }
                                         auto& h1 = p1->GetHealth();
 
-                                        int sampleSize = distr(gen);
+                                        int sampleSize = distr(mt_gen);
                                         /*
                                         cout << "ref_num_contacts: " << reference_num_contacts << endl;
                                         cout << "People in interval: " << people_in_interval << endl;

@@ -203,7 +203,10 @@ void Sim::TimeStep(string& first, string& second, string& third,
 	std::vector<long> times(1501, 0);
 	std::vector<int> counts(1501, 0);
 
-	auto start3 = high_resolution_clock::now();                       
+	auto start3 = high_resolution_clock::now();   
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
 
 	for (auto typ : ContactType::IdList) {
 		if ((typ == ContactType::Id::Workplace && !isRegularWeekday) ||
@@ -237,53 +240,17 @@ void Sim::TimeStep(string& first, string& second, string& third,
 			// Infector updates individuals for contacts & transmission within each pool.
 			// Skip pools with id = 0, because it means Not Applicable.
 
-
 			#pragma omp for schedule(static)
 			for (size_t i = 1; i < poolSys.RefPools(typ).size(); i++) { // NOLINT
-				/*
-				if (!zero && thread_num == 0) {
-					zero = true;
-					printf("0\t");
-				}
-				if (!one && thread_num == 1) {
-					one = true;
-					printf("1\t");
-				}
-				if (!two && thread_num == 2) {
-					two = true;
-					printf("2\t");
-				}
-				if (!three && thread_num == 3) {
-					three = true;
-					printf("3\t");
-				}
-				if (!four && thread_num == 4) {
-					four = true;
-					printf("4\t");
-				}
-				if (!five && thread_num == 5) {
-					five = true;
-					printf("5\t");
-				}
-				if (!six && thread_num == 6) {
-					six = true;
-					printf("6\t");
-				}
-				if (!seven && thread_num == 7) {
-					seven = true;
-					printf("7\t");
-				}
-				*/
 					infector(poolSys.RefPools(typ)[i], m_contact_profiles[typ], m_transmission_profile,
 								m_handlers[thread_num], simDay, eventLogger,
 								workplace_distancing_factor,
 								community_distancing_factor,
 								school_distancing_factor,
 								intergeneration_distancing_factor,m_cnt_reduction_intergeneration_cutoff,
-								m_population,cnt_intensity_householdCluster, times, counts);
+								m_population,cnt_intensity_householdCluster, times, counts, gen);
 			}
 		}
-				//cout << "jello" << endl;
 
 		auto stop4 = high_resolution_clock::now();
 		auto duration4 = duration_cast<microseconds>(stop4 - start4);
