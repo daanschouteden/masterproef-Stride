@@ -1,0 +1,141 @@
+time: 1200
+nodes: 1
+procs: 2
+account string: llp_h_pds
+queue: q1h
+========================================================================
+[2021-04-22 17:42:26.428] [stride_logger] [info] SimController starting up at: Thu Apr 22 17:42:26 2021
+[2021-04-22 17:42:26.428] [stride_logger] [info] Executing revision: 
+[2021-04-22 17:42:26.428] [stride_logger] [info] Processor count: 36
+[2021-04-22 17:42:26.428] [stride_logger] [info] Creating dir:  2021-04-22-17:42:26/
+[2021-04-22 17:42:26.428] [stride_logger] [info] Max number OpenMP threads in this environment: 2
+[2021-04-22 17:42:26.428] [stride_logger] [info] Configured number of threads: 2
+[2021-04-22 17:42:26.428] [stride_logger] [info] No Event logging requested.
+[2021-04-22 17:42:26.428] [stride_logger] [info] Invoking PopBuilder.
+[2021-04-22 17:42:26.428] [stride_logger] [info] Building default population from file /vsc-hard-mounts/leuven-user/330/vsc33095/masterproef/data/pop_belgium11M_c500_teachers_censushh.csv.
+[2021-04-22 17:43:32.801] [stride_logger] [info] Registering CliViewer
+[2021-04-22 17:43:32.802] [stride_logger] [info] Registering InfectedFileViewer
+[2021-04-22 17:43:32.802] [stride_logger] [info]    SimRunner at start:
+[2021-04-22 17:43:32.926] [stride_logger] [info]       Day:    0  Done, infected count:    1200
+[2021-04-22 17:43:36.394] [stride_logger] [info]       Day:    1  Done, infected count:    1200
+[2021-04-22 17:43:39.564] [stride_logger] [info]       Day:    2  Done, infected count:    1268
+[2021-04-22 17:43:42.734] [stride_logger] [info]       Day:    3  Done, infected count:    1538
+[2021-04-22 17:43:45.890] [stride_logger] [info]       Day:    4  Done, infected count:    2002
+[2021-04-22 17:43:49.120] [stride_logger] [info]       Day:    5  Done, infected count:    2537
+[2021-04-22 17:43:51.804] [stride_logger] [info]       Day:    6  Done, infected count:    2936
+[2021-04-22 17:43:54.767] [stride_logger] [info]       Day:    7  Done, infected count:    3441
+[2021-04-22 17:43:57.837] [stride_logger] [info]       Day:    8  Done, infected count:    4332
+[2021-04-22 17:44:00.887] [stride_logger] [info]       Day:    9  Done, infected count:    5227
+[2021-04-22 17:44:03.950] [stride_logger] [info]       Day:   10  Done, infected count:    6289
+[2021-04-22 17:44:06.996] [stride_logger] [info]       Day:   11  Done, infected count:    7408
+[2021-04-22 17:44:10.057] [stride_logger] [info]       Day:   12  Done, infected count:    8743
+[2021-04-22 17:44:12.619] [stride_logger] [info]       Day:   13  Done, infected count:    9967
+[2021-04-22 17:44:15.406] [stride_logger] [info]       Day:   14  Done, infected count:   11440
+[2021-04-22 17:44:18.559] [stride_logger] [info]       Day:   15  Done, infected count:   13853
+[2021-04-22 17:44:21.885] [stride_logger] [info]       Day:   16  Done, infected count:   16479
+[2021-04-22 17:44:24.920] [stride_logger] [info]       Day:   17  Done, infected count:   19296
+[2021-04-22 17:44:28.019] [stride_logger] [info]       Day:   18  Done, infected count:   22691
+[2021-04-22 17:44:31.088] [stride_logger] [info]       Day:   19  Done, infected count:   26584
+[2021-04-22 17:44:33.654] [stride_logger] [info]       Day:   20  Done, infected count:   30025
+[2021-04-22 17:44:36.471] [stride_logger] [info]       Day:   21  Done, infected count:   34163
+[2021-04-22 17:44:39.551] [stride_logger] [info]       Day:   22  Done, infected count:   40906
+[2021-04-22 17:44:42.663] [stride_logger] [info]       Day:   23  Done, infected count:   48159
+[2021-04-22 17:44:45.820] [stride_logger] [info]       Day:   24  Done, infected count:   56248
+[2021-04-22 17:44:48.917] [stride_logger] [info]       Day:   25  Done, infected count:   65552
+[2021-04-22 17:44:52.132] [stride_logger] [info]       Day:   26  Done, infected count:   76585
+[2021-04-22 17:44:54.826] [stride_logger] [info]       Day:   27  Done, infected count:   86173
+[2021-04-22 17:44:57.783] [stride_logger] [info]       Day:   28  Done, infected count:   97226
+[2021-04-22 17:45:00.998] [stride_logger] [info]       Day:   29  Done, infected count:  114952
+[2021-04-22 17:45:04.168] [stride_logger] [info]       Day:   30  Done, infected count:  134429
+[2021-04-22 17:45:07.406] [stride_logger] [info]       Day:   31  Done, infected count:  155861
+[2021-04-22 17:45:10.625] [stride_logger] [info]       Day:   32  Done, infected count:  179997
+[2021-04-22 17:45:13.886] [stride_logger] [info]       Day:   33  Done, infected count:  207832
+[2021-04-22 17:45:16.651] [stride_logger] [info]       Day:   34  Done, infected count:  231216
+[2021-04-22 17:45:19.703] [stride_logger] [info]       Day:   35  Done, infected count:  257966
+[2021-04-22 17:45:22.993] [stride_logger] [info]       Day:   36  Done, infected count:  299785
+[2021-04-22 17:45:26.300] [stride_logger] [info]       Day:   37  Done, infected count:  344692
+[2021-04-22 17:45:29.634] [stride_logger] [info]       Day:   38  Done, infected count:  392336
+[2021-04-22 17:45:33.006] [stride_logger] [info]       Day:   39  Done, infected count:  444223
+[2021-04-22 17:45:36.462] [stride_logger] [info]       Day:   40  Done, infected count:  500538
+[2021-04-22 17:45:39.442] [stride_logger] [info]       Day:   41  Done, infected count:  547271
+[2021-04-22 17:45:42.682] [stride_logger] [info]       Day:   42  Done, infected count:  598741
+[2021-04-22 17:45:46.258] [stride_logger] [info]       Day:   43  Done, infected count:  673384
+[2021-04-22 17:45:49.872] [stride_logger] [info]       Day:   44  Done, infected count:  748633
+[2021-04-22 17:45:53.558] [stride_logger] [info]       Day:   45  Done, infected count:  823560
+[2021-04-22 17:45:57.214] [stride_logger] [info]       Day:   46  Done, infected count:  899261
+[2021-04-22 17:46:00.841] [stride_logger] [info]       Day:   47  Done, infected count:  975901
+[2021-04-22 17:46:03.929] [stride_logger] [info]       Day:   48  Done, infected count: 1035632
+[2021-04-22 17:46:07.270] [stride_logger] [info]       Day:   49  Done, infected count: 1095938
+[2021-04-22 17:46:10.999] [stride_logger] [info]       Day:   50  Done, infected count: 1174936
+[2021-04-22 17:46:14.656] [stride_logger] [info]       Day:   51  Done, infected count: 1248170
+[2021-04-22 17:46:18.264] [stride_logger] [info]       Day:   52  Done, infected count: 1315260
+[2021-04-22 17:46:21.890] [stride_logger] [info]       Day:   53  Done, infected count: 1376539
+[2021-04-22 17:46:25.485] [stride_logger] [info]       Day:   54  Done, infected count: 1433026
+[2021-04-22 17:46:28.469] [stride_logger] [info]       Day:   55  Done, infected count: 1474833
+[2021-04-22 17:46:31.678] [stride_logger] [info]       Day:   56  Done, infected count: 1513449
+[2021-04-22 17:46:35.101] [stride_logger] [info]       Day:   57  Done, infected count: 1558212
+[2021-04-22 17:46:38.541] [stride_logger] [info]       Day:   58  Done, infected count: 1597248
+[2021-04-22 17:46:41.948] [stride_logger] [info]       Day:   59  Done, infected count: 1630852
+[2021-04-22 17:46:45.309] [stride_logger] [info]       Day:   60  Done, infected count: 1659522
+[2021-04-22 17:46:48.710] [stride_logger] [info]       Day:   61  Done, infected count: 1684470
+[2021-04-22 17:46:51.598] [stride_logger] [info]       Day:   62  Done, infected count: 1702436
+[2021-04-22 17:46:54.661] [stride_logger] [info]       Day:   63  Done, infected count: 1718167
+[2021-04-22 17:46:57.927] [stride_logger] [info]       Day:   64  Done, infected count: 1734811
+[2021-04-22 17:47:01.164] [stride_logger] [info]       Day:   65  Done, infected count: 1748962
+[2021-04-22 17:47:04.436] [stride_logger] [info]       Day:   66  Done, infected count: 1760942
+[2021-04-22 17:47:07.635] [stride_logger] [info]       Day:   67  Done, infected count: 1770908
+[2021-04-22 17:47:10.834] [stride_logger] [info]       Day:   68  Done, infected count: 1779424
+[2021-04-22 17:47:13.537] [stride_logger] [info]       Day:   69  Done, infected count: 1785380
+[2021-04-22 17:47:16.466] [stride_logger] [info]       Day:   70  Done, infected count: 1790397
+[2021-04-22 17:47:19.611] [stride_logger] [info]       Day:   71  Done, infected count: 1795608
+[2021-04-22 17:47:22.775] [stride_logger] [info]       Day:   72  Done, infected count: 1800003
+[2021-04-22 17:47:25.923] [stride_logger] [info]       Day:   73  Done, infected count: 1803733
+[2021-04-22 17:47:29.042] [stride_logger] [info]       Day:   74  Done, infected count: 1806759
+[2021-04-22 17:47:32.195] [stride_logger] [info]       Day:   75  Done, infected count: 1809321
+[2021-04-22 17:47:34.848] [stride_logger] [info]       Day:   76  Done, infected count: 1811154
+[2021-04-22 17:47:37.769] [stride_logger] [info]       Day:   77  Done, infected count: 1812657
+[2021-04-22 17:47:40.900] [stride_logger] [info]       Day:   78  Done, infected count: 1814275
+[2021-04-22 17:47:43.985] [stride_logger] [info]       Day:   79  Done, infected count: 1815562
+[2021-04-22 17:47:47.103] [stride_logger] [info]       Day:   80  Done, infected count: 1816619
+[2021-04-22 17:47:50.204] [stride_logger] [info]       Day:   81  Done, infected count: 1817519
+[2021-04-22 17:47:53.350] [stride_logger] [info]       Day:   82  Done, infected count: 1818270
+[2021-04-22 17:47:55.997] [stride_logger] [info]       Day:   83  Done, infected count: 1818775
+[2021-04-22 17:47:58.897] [stride_logger] [info]       Day:   84  Done, infected count: 1819234
+[2021-04-22 17:48:01.997] [stride_logger] [info]       Day:   85  Done, infected count: 1819693
+[2021-04-22 17:48:05.141] [stride_logger] [info]       Day:   86  Done, infected count: 1820092
+[2021-04-22 17:48:08.237] [stride_logger] [info]       Day:   87  Done, infected count: 1820375
+[2021-04-22 17:48:11.341] [stride_logger] [info]       Day:   88  Done, infected count: 1820632
+[2021-04-22 17:48:14.446] [stride_logger] [info]       Day:   89  Done, infected count: 1820842
+[2021-04-22 17:48:17.100] [stride_logger] [info]       Day:   90  Done, infected count: 1820991
+[2021-04-22 17:48:19.937] [stride_logger] [info]       Day:   91  Done, infected count: 1821117
+[2021-04-22 17:48:23.074] [stride_logger] [info]       Day:   92  Done, infected count: 1821253
+[2021-04-22 17:48:26.183] [stride_logger] [info]       Day:   93  Done, infected count: 1821360
+[2021-04-22 17:48:29.284] [stride_logger] [info]       Day:   94  Done, infected count: 1821441
+[2021-04-22 17:48:32.364] [stride_logger] [info]       Day:   95  Done, infected count: 1821523
+[2021-04-22 17:48:35.442] [stride_logger] [info]       Day:   96  Done, infected count: 1821594
+[2021-04-22 17:48:38.059] [stride_logger] [info]       Day:   97  Done, infected count: 1821641
+[2021-04-22 17:48:40.862] [stride_logger] [info]       Day:   98  Done, infected count: 1821675
+[2021-04-22 17:48:43.967] [stride_logger] [info]       Day:   99  Done, infected count: 1821721
+[2021-04-22 17:48:47.013] [stride_logger] [info]       Day:  100  Done, infected count: 1821751
+[2021-04-22 17:48:47.591] [stride_logger] [info]    SimRunner done after: 00:05:14:789:870
+[2021-04-22 17:48:47.609] [stride_logger] [info] SimController shutting down after: 00:06:21:184:260
+========================================================================
+Epilogue args:
+Date: Thu Apr 22 17:48:49 CEST 2021
+Allocated nodes:
+r25i13n06
+r25i13n06
+Job ID: 50713912.tier2-p-moab-2.tier2.hpc.kuleuven.be
+User ID: vsc33095
+Group ID: vsc33095
+Job Name: standard_opt_2.pbs
+Session ID: 11700
+Resource List: nodes=1:ppn=2,walltime=00:20:00,neednodes=1:ppn=2,pmem=5gb
+Resources Used: cput=00:10:09,vmem=3357176kb,walltime=00:06:39,mem=3096728kb,energy_used=0
+Queue Name: q1h
+Account String: llp_h_pds
+-------------------------------------------------------------------------
+time: 399
+nodes: 1
+procs: 2
+account: llp_h_pds
