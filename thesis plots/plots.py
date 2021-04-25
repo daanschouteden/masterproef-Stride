@@ -1,4 +1,3 @@
-from matplotlib.pyplot import colorbar
 import plotly.express as px
 import plotly.graph_objects as go
 
