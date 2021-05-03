@@ -118,7 +118,7 @@ def convert_pool_results(step, runtype):
         
         with open(step + "/" + runtype + '.csv', 'w') as csvfile:
             csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(['household', 'k12school', 'college', 'workplace', 'primary', 'secondary', 'cluster'])
+            csvwriter.writerow(['Household', 'K-12 school', 'College', 'Workplace', 'Primary', 'Secondary', 'Cluster'])
             for i in range(len(household)):
                 csvwriter.writerow([household[i], k12school[i], college[i], workplace[i], primary[i], secondary[i], cluster[i]])
     except:
@@ -344,8 +344,8 @@ def step_results(step):
 
 if __name__== "__main__":
     #step_results('0-basis')
-    #step_results('1-standard')
+    step_results('1-standard')
     
     #convert_poolsize_times('1-standard', 'all_1_poolsize_times')
 
-    convert_times_counts('1-standard', 'all_1_times_counts')
+    #convert_times_counts('1-standard', 'all_1_times_counts')
