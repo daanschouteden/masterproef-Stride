@@ -9,6 +9,7 @@ standard_path = "1-standard/"
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
 threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
 comparison_section_colors= ["#FFF700", "#2BD8E7", "#B3AD00", "#2F8F97"]
+approach_colors = ["FDAA10","84894a","64afff","1f4397"]
 
 
 #---------- BASIS ----------

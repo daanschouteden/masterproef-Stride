@@ -14,6 +14,7 @@ filename = "all_1_times_counts.csv"
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
 threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
 comparison_section_colors= ["#FFF700", "#2BD8E7", "#B3AD00", "#2F8F97"]
+approach_colors = ["#FDAA10","#84894a","#64afff","#1f4397"]
 
 
 def standard_all_averages():
@@ -69,7 +70,7 @@ def standard_all_averages():
             width=5
         ),
         marker=dict(
-            color='orange',
+            color=approach_colors[0],
             size=10,
         ),
     )
@@ -134,7 +135,7 @@ def standard_all_totals():
             width=5
         ),
         marker=dict(
-            color='orange',
+            color=approach_colors[0],
             size=10,
         ),
     )
@@ -194,7 +195,7 @@ def standard_all_totals_weekly():
             width=5
         ),
         marker=dict(
-            color='orange',
+            color=approach_colors[0],
             size=10,
         ),
     )
@@ -379,7 +380,7 @@ def standard_type_totals_both():
 
     fig = go.Figure(
         data=[
-            go.Bar(name="algorithm only", y=df_both['pooltype'], x=df_both['algorithm only'], text=df_both['algorithm only'], orientation='h', marker=dict(color='orange')),
+            go.Bar(name="algorithm only", y=df_both['pooltype'], x=df_both['algorithm only'], text=df_both['algorithm only'], orientation='h', marker=dict(color=approach_colors[0])),
             go.Bar(name="total time", y=df_both['pooltype'], x=df_both['total time'], text=df_both['total time'], orientation='h', marker=dict(color='blue')),
         ],
     ).update_layout(
