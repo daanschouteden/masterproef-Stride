@@ -11,7 +11,7 @@ aggregation_counter = dict()
 results = dict()
 #results2 = dict()
 
-FILENAME = "event_log_standard.txt"
+FILENAME = "event_log.txt"
 # FILENAME2 = "test.txt"
 EVENT_TYPE = "[CONT]"
 POOL_TYPE = 0
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     parseFile(FILENAME, results)
     df['Secondary'] = list(results.values())[:101]
 
-    df.to_csv('reverse_contacts_standard.csv', index=False)
+    df.to_csv('reverse_contacts_iterative_intervals.csv', index=False)
 
     '''
     parseFile(FILENAME2, results2)

@@ -8,9 +8,10 @@ import xml.etree.ElementTree as ET
 contact_vector_path = "/home/daan/opt/stride-302/data/contact_matrix_flanders_conditional_teachers.xml"
 contact_matrix_path = "/home/daan/Documents/Masterproef/matrices/"
 contact_rates_csv = 'contact_rates_original.csv'
-reverse_contact_matrix = 'reverse_contacts_standard.csv'
+reverse_cr_standard = 'reverse_contacts_standard.csv'
+reverse_cr_ii = 'reverse_contacts_iterative_intervals.csv'
 
-approach_colors = ["#c20000","#FDAA10","#84894a","#64afff","#1f4397"]
+approach_colors = ["#c20000","#FDAA10","#14B37D","#64afff","#1f4397"]
 
 #---------- Contact matrices ----------
 
@@ -259,39 +260,40 @@ def contact_matrix_to_csv():
 #---------- Reverse contact matrices ----------
 
 def contact_matrix_plot():
-    df_original = pd.read_csv(contact_rates_csv)
-    df = pd.read_csv(reverse_contact_matrix)
+    df_standard = pd.read_csv(reverse_cr_standard)
+    df = pd.read_csv(reverse_cr_ii)
 
     conf = {
         'toImageButtonOptions': {
             'format': 'png', # one of png, svg, jpeg, webp
-            'filename': 'standard_reverse_cr_k12school',
+            'filename': 'ii_vs_standard_reverse_cr_secondary',
             #'height': 500,
             #'width': 700,
             #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
         }
     }
-    fig = go.Figure()
+    print(df.head(1))
 
-    # Original
-    fig.add_trace(go.Scatter(x=df_original['age'], y=df_original['school'],
+    fig = go.Figure()
+    # Standard
+    fig.add_trace(go.Scatter(x=df_standard['age'], y=df_standard['Secondary'],
                     mode='markers',
                     name='Original',
                     marker=dict(
-                        size=16,
-                        color="blue",
-                        opacity=0.8,
+                        size=18,
+                        color=approach_colors[1],
+                        opacity=1,
                     ),
     ))
 
-    # Original
-    fig.add_trace(go.Scatter(x=df['age'], y=df['K-12 school'],
+    # Iterative intervals
+    fig.add_trace(go.Scatter(x=df['age'], y=df['Secondary'],
                     mode='markers',
-                    name='Reversed',
+                    name='Iterative intervals',
                     marker=dict(
-                        size=16,
-                        color="orange",
-                        opacity=0.8,
+                        size=14,
+                        color=approach_colors[2],
+                        opacity=1,
                     ),
     ))
 

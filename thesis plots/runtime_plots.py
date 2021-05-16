@@ -1,15 +1,17 @@
 import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 import sys
 
 vsc_results_path = '/home/daan/Documents/Masterproef/masterproef/VSC results/'
 basis_path = "0-basis/"
 standard_path = "1-standard/"
+ii_path = "2-iterative_intervals/"
 
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
 threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
 comparison_section_colors= ["#FFF700", "#2BD8E7", "#B3AD00", "#2F8F97"]
-approach_colors = ["FDAA10","84894a","64afff","1f4397"]
+approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397"]
 
 
 #---------- BASIS ----------
@@ -743,6 +745,58 @@ def stats(path, filename):
     print(path + ": " + filename)
     print(df.mean())
 
+#---------- ITERATIVE INTERVALS ----------
+
+def ii_vs_standard_all_infector():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'ii_vs_standard_infector',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,40],
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5)
+        )
+    fig.show(config=conf)
+
 
 if __name__=="__main__":
-    stats(standard_path, 'opt_8')
+    stats(ii_path, 'all_1')
+    #ii_vs_standard_all_infector()
