@@ -344,8 +344,10 @@ def step_results(step):
 
 if __name__== "__main__":
     #step_results('0-basis')
-    step_results('1-standard')
+    #step_results('1-standard')
+    step_results('2-iterative_intervals')
     
     #convert_poolsize_times('1-standard', 'all_1_poolsize_times')
 
     #convert_times_counts('1-standard', 'all_1_times_counts')
+    convert_times_counts('2-iterative_intervals', 'all_1_times_counts')
