@@ -1,6 +1,11 @@
 import csv
 import sys
 
+basis_path = '0-basis'
+standard_path = '1-standard'
+ii_path = '2-iterative_intervals'
+swi_path = '3-sampling_with_iteration'
+
 
 def convert_results(step, runtype):
     try:
@@ -345,9 +350,11 @@ def step_results(step):
 if __name__== "__main__":
     #step_results('0-basis')
     #step_results('1-standard')
-    step_results('2-iterative_intervals')
+    #step_results('2-iterative_intervals')
     
     #convert_poolsize_times('1-standard', 'all_1_poolsize_times')
 
     #convert_times_counts('1-standard', 'all_1_times_counts')
-    convert_times_counts('2-iterative_intervals', 'all_1_times_counts')
+    #convert_times_counts('2-iterative_intervals', 'all_1_times_counts')
+    #convert_times_counts(sam_w_it, 'all_1_times_counts_pSize')
+    convert_results(swi_path, 'all_1_pType')

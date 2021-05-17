@@ -1,0 +1,12 @@
+#!/bin/bash -l
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=00:03:00
+#PBS -A llp_h_pds
+
+module purge
+module load foss/2018a
+module load Boost/1.70.0-foss-2018a
+
+cd $PBS_O_WORKDIR
+
+./bin/stride
