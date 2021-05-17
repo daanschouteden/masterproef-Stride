@@ -10,8 +10,11 @@ vsc_results_path = '/home/daan/Documents/Masterproef/masterproef/VSC results/'
 basis_path = "0-basis/"
 standard_path = "1-standard/"
 iterative_intervals_path = "2-iterative_intervals/"
+sampling_with_iteration_path = "3-sampling_with_iteration/"
 
 filename = "all_1_times_counts.csv"
+filename_ptype = "all_1_times_counts_pType.csv"
+filename_psize = "all_1_times_counts_pSize.csv"
 
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
 threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
@@ -900,12 +903,12 @@ def ii_vs_standard_type_totals():
     df.index += 1
 
     df_og = pd.DataFrame(columns=['pooltype', 'original'])
-    secondary = df['times_secondary'].mul(5).sum()
-    primary = df['times_primary'].mul(2).sum()
-    work = df['times_workplace'].mul(5).sum()
-    k12school = df['times_k12school'].mul(5).sum()
-    college = df['times_college'].mul(5).sum()
-    household = df['times_household'].mul(7).sum()
+    secondary = df['times_secondary'].sum()
+    primary = df['times_primary'].sum()
+    work = df['times_workplace'].sum()
+    k12school = df['times_k12school'].sum()
+    college = df['times_college'].sum()
+    household = df['times_household'].sum()
     
     #results = {'secondary': secondary, 'primary': primary, 'work': work, 'k12-school': k12school, 'college': college, 'household': household}
     pooltype =  ['Secondary', 'Primary', 'Workplace', 'K-12 school', 'College', 'Household']
@@ -914,7 +917,7 @@ def ii_vs_standard_type_totals():
     for i in range(len(pooltype)):
         df_og.loc[i] = [pooltype[i]] + [times[i]]
 
-    df_og['original'] = df_og['original'].div(1000000).div(7)
+    df_og['original'] = df_og['original'].div(1000000)
     df_og['original'] = df_og['original'].astype(float).round(2)
 
     # Don't show zero values
@@ -927,12 +930,12 @@ def ii_vs_standard_type_totals():
     df.index += 1
 
     df_ii = pd.DataFrame(columns=['pooltype', 'iterative intervals'])
-    secondary = df['times_secondary'].mul(5).sum()
-    primary = df['times_primary'].mul(2).sum()
-    work = df['times_workplace'].mul(5).sum()
-    k12school = df['times_k12school'].mul(5).sum()
-    college = df['times_college'].mul(5).sum()
-    household = df['times_household'].mul(7).sum()
+    secondary = df['times_secondary'].sum()
+    primary = df['times_primary'].sum()
+    work = df['times_workplace'].sum()
+    k12school = df['times_k12school'].sum()
+    college = df['times_college'].sum()
+    household = df['times_household'].sum()
     
     #results = {'secondary': secondary, 'primary': primary, 'work': work, 'k12-school': k12school, 'college': college, 'household': household}
     pooltype =  ['Secondary', 'Primary', 'Workplace', 'K-12 school', 'College', 'Household']
@@ -941,7 +944,7 @@ def ii_vs_standard_type_totals():
     for i in range(len(pooltype)):
         df_ii.loc[i] = [pooltype[i]] + [times[i]]
 
-    df_ii['iterative intervals'] = df_ii['iterative intervals'].div(1000000).div(7)
+    df_ii['iterative intervals'] = df_ii['iterative intervals'].div(1000000)
     df_ii['iterative intervals'] = df_ii['iterative intervals'].astype(float).round(2)
 
     # Don't show zero values
@@ -996,7 +999,7 @@ def ii_vs_standard_type_totals():
             tick0 = 0,
             #dtick = 10,
         ),
-        xaxis_range=[0,24],
+        xaxis_range=[0,32],
         legend=dict(
             yanchor="bottom",
             y=0.05,
@@ -1004,7 +1007,7 @@ def ii_vs_standard_type_totals():
             x=0.98,
             traceorder='normal',
         ),
-        #legend_traceorder='reversed',
+        legend_traceorder='reversed',
         #yaxis={'categoryorder':'total descending'}
     ).update_xaxes(
         title_standoff=35,
@@ -1032,6 +1035,1287 @@ def ii_type_averages():
     iterative_intervals_type_averages_k12school()
     iterative_intervals_type_averages_college()
 
+#---------- 3-Sampling with iteration ----------
+
+#----- pType
+def swi_pType_averages_primary_full():
+    pType = 'primary'
+    mode = 'markers'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType + "_full",
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,1450],
+        yaxis_range=[-0.05,9],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_secondary_full():
+    pType = 'secondary'
+    mode = 'markers'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType + "_full",
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,1450],
+        yaxis_range=[-0.05,9],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_workplace_full():
+    pType = 'workplace'
+    mode = 'markers'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType + "_full",
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,1020],
+        yaxis_range=[-0.05,6],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_primary():
+    pType = 'primary'
+    mode = 'lines'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,300],
+        yaxis_range=[0,0.5],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_secondary():
+    pType = 'secondary'
+    mode = 'lines'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,300],
+        yaxis_range=[0,0.5],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_workplace():
+    pType = 'workplace'
+    mode = 'lines'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,300],
+        yaxis_range=[0,0.5],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_k12school():
+    pType = 'k12school'
+    mode='lines'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in microseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,51],
+        yaxis_range=[0,0.01],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=4,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages_college():
+    pType = 'college'
+    mode='lines'
+    fn = "times_avg_swi_pType_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in microseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,51],
+        yaxis_range=[0,0.02],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=4,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pType_averages():
+    swi_pType_averages_primary_full()
+    swi_pType_averages_secondary_full()
+    swi_pType_averages_workplace_full()
+
+    swi_pType_averages_primary()
+    swi_pType_averages_secondary()
+    swi_pType_averages_workplace()
+    swi_pType_averages_k12school()
+    swi_pType_averages_college()
+
+def swi_pType_vs_rest_type_totals():
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+
+    df_og = pd.DataFrame(columns=['pooltype', 'original'])
+    secondary = df['times_secondary'].sum()
+    primary = df['times_primary'].sum()
+    work = df['times_workplace'].sum()
+    k12school = df['times_k12school'].sum()
+    college = df['times_college'].sum()
+    household = df['times_household'].sum()
+    
+    #results = {'secondary': secondary, 'primary': primary, 'work': work, 'k12-school': k12school, 'college': college, 'household': household}
+    pooltype =  ['Secondary', 'Primary', 'Workplace', 'K-12 school', 'College', 'Household']
+    times = [secondary, primary, work, k12school, college, household]
+
+    for i in range(len(pooltype)):
+        df_og.loc[i] = [pooltype[i]] + [times[i]]
+
+    df_og['original'] = df_og['original'].div(1000000)
+    df_og['original'] = df_og['original'].astype(float).round(2)
+
+    # Don't show zero values
+    df_og.replace(0, NaN, inplace=True)
+
+    df_og['pooltype'] = df_og['pooltype'].astype(str)
+    print(df_og)
+
+    #------ II
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+
+    df_ii = pd.DataFrame(columns=['pooltype', 'iterative intervals'])
+    secondary = df['times_secondary'].sum()
+    primary = df['times_primary'].sum()
+    work = df['times_workplace'].sum()
+    k12school = df['times_k12school'].sum()
+    college = df['times_college'].sum()
+    household = df['times_household'].sum()
+    
+    #results = {'secondary': secondary, 'primary': primary, 'work': work, 'k12-school': k12school, 'college': college, 'household': household}
+    pooltype =  ['Secondary', 'Primary', 'Workplace', 'K-12 school', 'College', 'Household']
+    times = [secondary, primary, work, k12school, college, household]
+
+    for i in range(len(pooltype)):
+        df_ii.loc[i] = [pooltype[i]] + [times[i]]
+
+    df_ii['iterative intervals'] = df_ii['iterative intervals'].div(1000000)
+    df_ii['iterative intervals'] = df_ii['iterative intervals'].astype(float).round(2)
+
+    # Don't show zero values
+    df_ii.replace(0, NaN, inplace=True)
+
+    df_ii['pooltype'] = df_ii['pooltype'].astype(str)
+
+    #------ SWI
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_ptype)
+    df.index += 1
+
+    df_swi = pd.DataFrame(columns=['pooltype', 'sampling with iteration'])
+    secondary = df['times_secondary'].sum()
+    primary = df['times_primary'].sum()
+    work = df['times_workplace'].sum()
+    k12school = df['times_k12school'].sum()
+    college = df['times_college'].sum()
+    household = df['times_household'].sum()
+    
+    #results = {'secondary': secondary, 'primary': primary, 'work': work, 'k12-school': k12school, 'college': college, 'household': household}
+    pooltype =  ['Secondary', 'Primary', 'Workplace', 'K-12 school', 'College', 'Household']
+    times = [secondary, primary, work, k12school, college, household]
+
+    for i in range(len(pooltype)):
+        df_swi.loc[i] = [pooltype[i]] + [times[i]]
+
+    df_swi['sampling with iteration'] = df_swi['sampling with iteration'].div(1000000)
+    df_swi['sampling with iteration'] = df_swi['sampling with iteration'].astype(float).round(2)
+
+    # Don't show zero values
+    df_swi.replace(0, NaN, inplace=True)
+
+    df_swi['pooltype'] = df_swi['pooltype'].astype(str)
+
+    df_both = df_ii.merge(df_og, how='inner', on='pooltype')
+    df_both = df_both.merge(df_swi, how='inner', on='pooltype')
+    print(df_both)
+    df_both = df_both.sort_values('original', ascending=True)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'swi_vs_rest_type_totals',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                name="sampling with iteration",
+                y=df_both['pooltype'],
+                x=df_both['sampling with iteration'],
+                text=df_both['sampling with iteration'],
+                orientation='h',
+                marker=dict(color=approach_colors[2]),
+                texttemplate="%{x:.2f}",
+            ),
+            go.Bar(
+                name="iterative intervals",
+                y=df_both['pooltype'],
+                x=df_both['iterative intervals'],
+                text=df_both['iterative intervals'],
+                orientation='h',
+                marker=dict(color=approach_colors[1]),
+                texttemplate="%{x:.2f}",
+            ),
+            go.Bar(
+                name="original",
+                y=df_both['pooltype'],
+                x=df_both['original'],
+                text=df_both['original'],
+                orientation='h',
+                marker=dict(color=approach_colors[0]),
+                texttemplate="%{x:.2f}",
+            ),
+        ],
+    ).update_layout(
+        xaxis_title="Time (in seconds)",
+        yaxis_title=None,
+        font_size=40,
+        legend_title=None,
+        barmode='group',
+        xaxis = dict(
+            #tickmode = 'linear',
+            tick0 = 0,
+            #dtick = 10,
+        ),
+        xaxis_range=[0,32],
+        legend=dict(
+            yanchor="bottom",
+            y=0.05,
+            xanchor="right",
+            x=0.98,
+            traceorder='normal',
+        ),
+        legend_traceorder='reversed',
+        #yaxis={'categoryorder':'total descending'}
+    ).update_xaxes(
+        title_standoff=35,
+        showgrid=False,
+        #gridwidth=5,
+        #gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=50,
+        showgrid=False,
+        #gridwidth=5,
+        #gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ). update_traces(
+        textposition='outside',
+    )
+    fig.show(config=conf)
+    #plotly.offline.plot(fig)
+
+#----- pSize
+def swi_pSize_averages_primary():
+    pType = 'primary'
+    mode = 'lines'
+    fn = "times_avg_swi_pSize_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_psize)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,300],
+        yaxis_range=[0,0.5],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pSize_averages_secondary():
+    pType = 'secondary'
+    mode = 'lines'
+    fn = "times_avg_swi_pSize_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_psize)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,300],
+        yaxis_range=[0,0.5],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pSize_averages_workplace():
+    pType = 'workplace'
+    mode = 'lines'
+    fn = "times_avg_swi_pSize_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_psize)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in milliseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,300],
+        yaxis_range=[0,0.5],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pSize_averages_k12school():
+    pType = 'k12school'
+    mode='lines'
+    fn = "times_avg_swi_pSize_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_psize)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in microseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,51],
+        yaxis_range=[0,0.02],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=4,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pSize_averages_college():
+    pType = 'college'
+    mode='lines'
+    fn = "times_avg_swi_pSize_"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+    df_or = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_or['totals'] = df['times_' + pType]
+    df_or['totals'] = df_or['totals'].div(1000)
+    df_or['counts'] = df['counts_' + pType]
+    df_or['averages'] = df_or['totals'] / df_or['counts']
+
+    df = pd.read_csv(vsc_results_path + iterative_intervals_path + filename)
+    df.index += 1
+    df_ii = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_ii['totals'] = df['times_' + pType]
+    df_ii['totals'] = df_ii['totals'].div(1000)
+    df_ii['counts'] = df['counts_' + pType]
+    df_ii['averages'] = df_ii['totals'] / df_ii['counts']
+
+    df = pd.read_csv(vsc_results_path + sampling_with_iteration_path + filename_psize)
+    df.index += 1
+    df_swi = pd.DataFrame(columns=['totals', 'counts', 'averages'])
+    df_swi['totals'] = df['times_' + pType]
+    df_swi['totals'] = df_swi['totals'].div(1000)
+    df_swi['counts'] = df['counts_' + pType]
+    df_swi['averages'] = df_swi['totals'] / df_swi['counts']
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': fn + pType,
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original all-to-all", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Time (in microseconds)",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,51],
+        yaxis_range=[0,0.02],
+        legend=dict(
+            yanchor="top",
+            y=0.91,
+            xanchor="left",
+            x=0.10,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=40,
+        showgrid=True,
+        gridwidth=2,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=4,
+        ),
+    )
+    fig.show(config=conf)
+
+def swi_pSize_averages():
+    swi_pSize_averages_primary()
+    swi_pSize_averages_secondary()
+    swi_pSize_averages_workplace()
+    swi_pSize_averages_k12school()
+    swi_pSize_averages_college()
+
 if __name__=="__main__":
     #standard_all_averages()
     #standard_all_totals()
@@ -1041,3 +2325,7 @@ if __name__=="__main__":
     #standard_type_totals_both()
     #ii_type_averages()
     ii_vs_standard_type_totals()
+    #swi_pType_averages()
+    #swi_pSize_averages()
+    #swi_pType_vs_rest_type_totals()
+    swi_pType_vs_rest_type_totals()

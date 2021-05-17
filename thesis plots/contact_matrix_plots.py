@@ -10,6 +10,7 @@ contact_matrix_path = "/home/daan/Documents/Masterproef/matrices/"
 contact_rates_csv = 'contact_rates_original.csv'
 reverse_cr_standard = 'reverse_contacts_standard.csv'
 reverse_cr_ii = 'reverse_contacts_iterative_intervals.csv'
+reverse_cr_swi = 'reverse_contacts_sampling_with_iteration.csv'
 
 approach_colors = ["#c20000","#FDAA10","#14B37D","#64afff","#1f4397"]
 
@@ -261,12 +262,12 @@ def contact_matrix_to_csv():
 
 def contact_matrix_plot():
     df_standard = pd.read_csv(reverse_cr_standard)
-    df = pd.read_csv(reverse_cr_ii)
+    df = pd.read_csv(reverse_cr_swi)
 
     conf = {
         'toImageButtonOptions': {
             'format': 'png', # one of png, svg, jpeg, webp
-            'filename': 'ii_vs_standard_reverse_cr_secondary',
+            'filename': 'swi_vs_standard_reverse_cr_workplace',
             #'height': 500,
             #'width': 700,
             #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
@@ -276,7 +277,7 @@ def contact_matrix_plot():
 
     fig = go.Figure()
     # Standard
-    fig.add_trace(go.Scatter(x=df_standard['age'], y=df_standard['Secondary'],
+    fig.add_trace(go.Scatter(x=df_standard['age'], y=df_standard['Workplace'],
                     mode='markers',
                     name='Original',
                     marker=dict(
@@ -286,13 +287,13 @@ def contact_matrix_plot():
                     ),
     ))
 
-    # Iterative intervals
-    fig.add_trace(go.Scatter(x=df['age'], y=df['Secondary'],
+    # Sampling with iteration
+    fig.add_trace(go.Scatter(x=df['age'], y=df['Workplace'],
                     mode='markers',
                     name='Iterative intervals',
                     marker=dict(
                         size=14,
-                        color=approach_colors[2],
+                        color=approach_colors[3],
                         opacity=1,
                     ),
     ))
