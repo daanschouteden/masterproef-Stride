@@ -8,11 +8,12 @@ basis_path = "0-basis/"
 standard_path = "1-standard/"
 ii_path = "2-iterative_intervals/"
 swi_path = "3-sampling_with_iteration/"
+fs_path = "4-full_sampling/"
 
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
 threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
 comparison_section_colors= ["#FFF700", "#2BD8E7", "#B3AD00", "#2F8F97"]
-approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397"]
+approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000"]
 
 
 #---------- BASIS ----------
@@ -853,7 +854,141 @@ def swi_all_infector():
         )
     fig.show(config=conf)
 
+#---------- FULL SAMPLING pType ----------
+
+def fs_pType_all_infector():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    df_swi = pd.read_csv(vsc_results_path + swi_path + "all_1_pType.csv")
+    df_swi.index += 1
+    df_swi = df_swi.div(1000000)
+
+    df_fs = pd.read_csv(vsc_results_path + fs_path + "all_1_pType.csv")
+    df_fs.index += 1
+    df_fs = df_fs.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'fs_pType_vs_rest_infector',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,40],
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5)
+        )
+    fig.show(config=conf)
+
+#---------- FULL SAMPLING pSize ----------
+
+def fs_pSize_all_infector():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    df_swi = pd.read_csv(vsc_results_path + swi_path + "all_1_pType.csv")
+    df_swi.index += 1
+    df_swi = df_swi.div(1000000)
+
+    df_fs = pd.read_csv(vsc_results_path + fs_path + "all_1_pType.csv")
+    df_fs.index += 1
+    df_fs = df_fs.div(1000000)
+
+    df_fs2 = pd.read_csv(vsc_results_path + fs_path + "all_1_pSize.csv")
+    df_fs2.index += 1
+    df_fs2 = df_fs2.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'fs_pSize_vs_rest_infector',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
+            go.Scatter(name="Full sampling (>150)", x=df_fs2.index, y=df_fs2['Infector'], mode='lines', marker=dict(color=approach_colors[5])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,40],
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5)
+        )
+    fig.show(config=conf)
+
 if __name__=="__main__":
-    stats(swi_path, 'all_1_pType')
+    #stats(ii_path, 'all_1')
     #ii_vs_standard_all_infector()
-    swi_all_infector()
+    #stats(swi_path, 'all_1_pType')
+    #swi_all_infector()
+    #stats(fs_path, 'all_1_pType')
+    #fs_pType_all_infector()
+    stats(fs_path, 'all_1_pSize')
+    #fs_pSize_all_infector()
