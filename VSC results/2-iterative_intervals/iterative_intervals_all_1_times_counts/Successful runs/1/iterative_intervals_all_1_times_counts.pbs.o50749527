@@ -1,0 +1,54 @@
+jobid_var=PBS_JOBID
+time: 180
+nodes: 1
+procs: 1
+account string: llp_h_pds
+queue: q1h
+========================================================================
+[2021-05-19 17:44:26.569] [stride_logger] [info] SimController starting up at: Wed May 19 17:44:26 2021
+[2021-05-19 17:44:26.569] [stride_logger] [info] Executing revision: 
+[2021-05-19 17:44:26.569] [stride_logger] [info] Processor count: 36
+[2021-05-19 17:44:26.569] [stride_logger] [info] Creating dir:  2021-05-19-17:44:26/
+[2021-05-19 17:44:26.569] [stride_logger] [info] Max number OpenMP threads in this environment: 1
+[2021-05-19 17:44:26.569] [stride_logger] [info] Configured number of threads: 1
+[2021-05-19 17:44:26.569] [stride_logger] [info] No Event logging requested.
+[2021-05-19 17:44:26.569] [stride_logger] [info] Invoking PopBuilder.
+[2021-05-19 17:44:26.569] [stride_logger] [info] Building default population from file /vsc-hard-mounts/leuven-user/330/vsc33095/masterproef/data/pop_belgium11M_c500_teachers_censushh.csv.
+[2021-05-19 17:45:30.034] [stride_logger] [info] Registering CliViewer
+[2021-05-19 17:45:30.035] [stride_logger] [info] Registering InfectedFileViewer
+[2021-05-19 17:45:30.035] [stride_logger] [info]    SimRunner at start:
+[2021-05-19 17:45:30.156] [stride_logger] [info]       Day:    0  Done, infected count:    1200
+Household
+Primary
+Secondary
+writing out weekend times.txt
+[2021-05-19 17:45:50.112] [stride_logger] [info]       Day:    1  Done, infected count:    1200
+Household
+K12School
+College
+Workplace
+Primary
+Secondary
+writing out weekday times.txt
+[2021-05-19 17:46:12.913] [stride_logger] [info]       Day:    2  Done, infected count:    1293
+[2021-05-19 17:46:13.495] [stride_logger] [info]    SimRunner done after: 00:00:43:460:544
+[2021-05-19 17:46:13.521] [stride_logger] [info] SimController shutting down after: 00:01:46:954:710
+========================================================================
+Epilogue args:
+Date: Wed May 19 17:46:15 CEST 2021
+Allocated nodes:
+r26i13n02
+Job ID: 50749527.tier2-p-moab-2.tier2.hpc.kuleuven.be
+User ID: vsc33095
+Group ID: vsc33095
+Job Name: iterative_intervals_all_1_times_counts.pbs
+Session ID: 10433
+Resource List: nodes=1:ppn=1,walltime=00:03:00,neednodes=1:ppn=1,pmem=5gb
+Resources Used: cput=00:01:48,vmem=3355128kb,walltime=00:01:59,mem=3096848kb,energy_used=0
+Queue Name: q1h
+Account String: llp_h_pds
+-------------------------------------------------------------------------
+time: 119
+nodes: 1
+procs: 1
+account: llp_h_pds
