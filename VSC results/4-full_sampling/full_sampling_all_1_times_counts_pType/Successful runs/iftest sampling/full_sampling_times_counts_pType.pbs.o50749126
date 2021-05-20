@@ -1,0 +1,53 @@
+time: 180
+nodes: 1
+procs: 1
+account string: llp_h_pds
+queue: q1h
+========================================================================
+[2021-05-19 11:41:13.929] [stride_logger] [info] SimController starting up at: Wed May 19 11:41:13 2021
+[2021-05-19 11:41:13.929] [stride_logger] [info] Executing revision: 
+[2021-05-19 11:41:13.929] [stride_logger] [info] Processor count: 36
+[2021-05-19 11:41:13.929] [stride_logger] [info] Creating dir:  2021-05-19-11:41:13/
+[2021-05-19 11:41:13.929] [stride_logger] [info] Max number OpenMP threads in this environment: 1
+[2021-05-19 11:41:13.929] [stride_logger] [info] Configured number of threads: 1
+[2021-05-19 11:41:13.929] [stride_logger] [info] No Event logging requested.
+[2021-05-19 11:41:13.929] [stride_logger] [info] Invoking PopBuilder.
+[2021-05-19 11:41:13.929] [stride_logger] [info] Building default population from file /vsc-hard-mounts/leuven-user/330/vsc33095/masterproef/data/pop_belgium11M_c500_teachers_censushh.csv.
+[2021-05-19 11:42:26.184] [stride_logger] [info] Registering CliViewer
+[2021-05-19 11:42:26.185] [stride_logger] [info] Registering InfectedFileViewer
+[2021-05-19 11:42:26.185] [stride_logger] [info]    SimRunner at start:
+[2021-05-19 11:42:26.315] [stride_logger] [info]       Day:    0  Done, infected count:    1200
+Household
+Primary
+Secondary
+writing out weekend times.txt
+[2021-05-19 11:42:41.052] [stride_logger] [info]       Day:    1  Done, infected count:    1200
+Household
+K12School
+College
+Workplace
+Primary
+Secondary
+writing out weekday times.txt
+[2021-05-19 11:43:02.488] [stride_logger] [info]       Day:    2  Done, infected count:    1308
+[2021-05-19 11:43:03.103] [stride_logger] [info]    SimRunner done after: 00:00:36:918:731
+[2021-05-19 11:43:03.118] [stride_logger] [info] SimController shutting down after: 00:01:49:191:412
+========================================================================
+Epilogue args:
+Date: Wed May 19 11:43:04 CEST 2021
+Allocated nodes:
+r25i27n22
+Job ID: 50749126.tier2-p-moab-2.tier2.hpc.kuleuven.be
+User ID: vsc33095
+Group ID: vsc33095
+Job Name: full_sampling_times_counts_pType.pbs
+Session ID: 7425
+Resource List: nodes=1:ppn=1,walltime=00:03:00,neednodes=1:ppn=1,pmem=5gb
+Resources Used: cput=00:01:50,vmem=2963648kb,walltime=00:02:00,mem=2705364kb,energy_used=0
+Queue Name: q1h
+Account String: llp_h_pds
+-------------------------------------------------------------------------
+time: 120
+nodes: 1
+procs: 1
+account: llp_h_pds

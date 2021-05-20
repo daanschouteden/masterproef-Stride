@@ -5,6 +5,7 @@ basis_path = '0-basis'
 standard_path = '1-standard'
 ii_path = '2-iterative_intervals'
 swi_path = '3-sampling_with_iteration'
+fs_path = '4-full_sampling'
 
 
 def convert_results(step, runtype):
@@ -355,6 +356,12 @@ if __name__== "__main__":
     #convert_poolsize_times('1-standard', 'all_1_poolsize_times')
 
     #convert_times_counts('1-standard', 'all_1_times_counts')
-    #convert_times_counts('2-iterative_intervals', 'all_1_times_counts')
-    #convert_times_counts(sam_w_it, 'all_1_times_counts_pSize')
-    convert_results(swi_path, 'all_1_pType')
+    #convert_results(ii_path, 'all_1')
+    #convert_times_counts(ii_path, 'all_1_times_counts')
+    #convert_results(swi_path, 'all_1_pType')
+    #convert_times_counts(swi_path, 'all_1_times_counts_pType')
+    #convert_times_counts(swi_path, 'all_1_times_counts_pSize')
+    convert_results(fs_path, 'all_1_pType')
+    #convert_times_counts(fs_path, 'all_1_times_counts_pType')
+    convert_results(fs_path, 'all_1_pSize')
+    #convert_times_counts(fs_path, 'all_1_times_counts_pSize')
