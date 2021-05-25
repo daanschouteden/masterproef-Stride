@@ -1,5 +1,6 @@
 import plotly.express as px
 import plotly.graph_objects as go
+from numpy.core.numeric import NaN
 
 import pandas as pd
 import sys
@@ -730,6 +731,81 @@ def contact_heatmaps():
     contact_heatmap_primary()
     contact_heatmap_secondary()
 
+def susceptibles():
+    df = pd.read_csv('susceptibles.csv')
+    print(df.head())
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'susceptibles_distribution'
+            #'height': 500,
+            #'width': 700,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = px.histogram(df, x="Pool size", y="Susceptibles"
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Number of susceptibles",
+        font_size=40,
+        showlegend=False
+    ).update_xaxes(
+        title_standoff=50,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+        title_standoff=80,
+    ).update_traces(marker=dict(color='blue'))
+    #.update_traces(marker=dict(color='rgba(15, 214, 30, 1)'))
+    fig.show(config=conf)
+
+def infectious():
+    df = pd.read_csv('infectious.csv')
+    df.index += 1
+    print(df.head())
+    # Don't show zero values
+    df.replace(0, NaN, inplace=True)
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'infectious_distribution'
+            #'height': 500,
+            #'width': 700,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = px.scatter(df, x=df.index, y="Infectious", 
+    ).update_layout(
+        xaxis_title="Pool size",
+        yaxis_title="Average infectious persons",
+        font_size=40,
+        showlegend=False,
+        xaxis_range=[0,1450],
+        yaxis_range=[0,160],
+    ).update_xaxes(
+        title_standoff=30,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+        title_standoff=40,
+    ).update_traces(marker=dict(color='blue', size=10))
+    #.update_traces(marker=dict(color='rgba(15, 214, 30, 1)'))
+    fig.show(config=conf)
 
 if __name__=="__main__":
-    pass
+    infectious()

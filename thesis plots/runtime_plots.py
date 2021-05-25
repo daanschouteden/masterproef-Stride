@@ -9,10 +9,11 @@ standard_path = "1-standard/"
 ii_path = "2-iterative_intervals/"
 swi_path = "3-sampling_with_iteration/"
 fs_path = "4-full_sampling/"
+its_path = "inf-to-sus/"
 
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
 threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
-comparison_section_colors= ["#FFF700", "#2BD8E7", "#B3AD00", "#2F8F97"]
+comparison_section_colors= ["#ef476f", "#06d6a0", "#118ab2", "#ffd166"]
 approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000"]
 
 
@@ -659,6 +660,7 @@ def basis_standard_comparison_all():
             dtick = 10,
         ),
         yaxis_range=[0,80],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
         title_standoff=50,
         showgrid=True,
@@ -674,7 +676,7 @@ def basis_standard_comparison_all():
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=3)
         )
     fig.show(config=conf)
 
@@ -715,6 +717,7 @@ def basis_standard_comparison_opt():
             dtick = 10,
         ),
         yaxis_range=[0,3],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
         title_standoff=50,
         showgrid=True,
@@ -730,7 +733,7 @@ def basis_standard_comparison_opt():
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=3)
         )
     fig.show(config=conf)
 
@@ -983,6 +986,242 @@ def fs_pSize_all_infector():
         )
     fig.show(config=conf)
 
+
+#---------- INF-TO-SUS ----------
+
+def inf_to_sus_infectors():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "opt_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii_both = pd.read_csv(vsc_results_path + its_path + "ii_sort_both.csv")
+    df_ii_both.index += 1
+    df_ii_both = df_ii_both.div(1000000)
+
+    df_ii_sus = pd.read_csv(vsc_results_path + its_path + "ii_sort_sus.csv")
+    df_ii_sus.index += 1
+    df_ii_sus = df_ii_sus.div(1000000)
+
+    df_sample_contacts_both = pd.read_csv(vsc_results_path + its_path + "sample_contacts_sort_both.csv")
+    df_sample_contacts_both.index += 1
+    df_sample_contacts_both = df_sample_contacts_both.div(1000000)
+
+    df_sample_contacts_sus = pd.read_csv(vsc_results_path + its_path + "sample_contacts_sort_sus.csv")
+    df_sample_contacts_sus.index += 1
+    df_sample_contacts_sus = df_sample_contacts_sus.div(1000000)
+
+    df_sample_both = pd.read_csv(vsc_results_path + its_path + "sample_sort_both.csv")
+    df_sample_both.index += 1
+    df_sample_both = df_sample_both.div(1000000)
+
+    df_sample_sus = pd.read_csv(vsc_results_path + its_path + "sample_sort_sus.csv")
+    df_sample_sus.index += 1
+    df_sample_sus = df_sample_sus.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'inf_to_sus_infectors',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_ii_sus.head())
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            #go.Scatter(name="Iterative intervals (sort both)", x=df_ii_both.index, y=df_ii_both['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            #go.Scatter(name="Iterative intervals (sort susceptibles)", x=df_ii_sus.index, y=df_ii_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            go.Scatter(name="Sampling contacts (sort both)", x=df_sample_contacts_both.index, y=df_sample_contacts_both['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling contacts (sort susceptibles)", x=df_sample_contacts_sus.index, y=df_sample_contacts_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Sampling (sort both)", x=df_sample_both.index, y=df_sample_both['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            #go.Scatter(name="Sampling (sort susceptibles)", x=df_sample_sus.index, y=df_sample_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,2.5],
+        legend=dict(
+            yanchor="top",
+            y=0.98,
+            xanchor="left",
+            x=0.03,
+            traceorder='normal',
+        ),
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=3)
+        )
+    fig.show(config=conf)
+
+
+def its_infections():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "standard_opt_1/Successful runs/1/infected.csv", header=None).T
+    df_og.index += 1
+
+    df_ii_both = pd.read_csv(vsc_results_path + its_path + "ii_sort_both/Successful runs/1/infected.csv", header=None).T
+    df_ii_both.index += 1
+    print(df_ii_both)
+
+    df_ii_sus = pd.read_csv(vsc_results_path + its_path + "ii_sort_sus/Successful runs/1/infected.csv", header=None).T
+    df_ii_sus.index += 1
+
+    df_sample_contacts_both = pd.read_csv(vsc_results_path + its_path + "sample_contacts_sort_both/Successful runs/1/infected.csv", header=None).T
+    df_sample_contacts_both.index += 1
+
+    df_sample_contacts_sus = pd.read_csv(vsc_results_path + its_path + "sample_contacts_sort_sus/Successful runs/1/infected.csv", header=None).T
+    df_sample_contacts_sus.index += 1
+
+    df_sample_both = pd.read_csv(vsc_results_path + its_path + "sample_sort_both/Successful runs/1/infected.csv", header=None).T
+    df_sample_both.index += 1
+
+    df_sample_sus = pd.read_csv(vsc_results_path + its_path + "sample_sort_sus/Successful runs/1/infected.csv", header=None).T
+    df_sample_sus.index += 1
+
+    conf = {    
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'its_infections',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og[0], mode='lines', marker=dict(color=approach_colors[0])),
+            #go.Scatter(name="ii both", x=df_ii_both.index, y=df_ii_both[0], mode='lines', marker=dict(color=approach_colors[1])),
+            #go.Scatter(name="ii sus", x=df_ii_sus.index, y=df_ii_sus[0], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="sampling (sort both)", x=df_sample_both.index, y=df_sample_both[0], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="sampling (sort susceptibles)", x=df_sample_sus.index, y=df_sample_sus[0], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="sampling contacts (sort both)", x=df_sample_contacts_both.index, y=df_sample_contacts_both[0], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="sampling contacts (sort susceptibles)", x=df_sample_contacts_sus.index, y=df_sample_contacts_sus[0], mode='lines', marker=dict(color=approach_colors[4])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Infected people",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,840000],
+        legend=dict(
+            yanchor="top",
+            y=0.98,
+            xanchor="left",
+            x=0.01,
+            traceorder='normal',
+        ),
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5)
+        )
+    fig.show(config=conf)
+
+#---------- ALL-TO-ALL SUMMARY ----------
+
+def infector_summary():
+    df = pd.read_csv(vsc_results_path + basis_path + "all_1.csv")
+    df.index += 1
+    df = df.div(1000000)
+
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    df_swi = pd.read_csv(vsc_results_path + swi_path + "all_1_pType.csv")
+    df_swi.index += 1
+    df_swi = df_swi.div(1000000)
+
+    df_fs = pd.read_csv(vsc_results_path + fs_path + "all_1_pType.csv")
+    df_fs.index += 1
+    df_fs = df_fs.div(1000000)
+
+    df_fs2 = pd.read_csv(vsc_results_path + fs_path + "all_1_pSize.csv")
+    df_fs2.index += 1
+    df_fs2 = df_fs2.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'infector_runtimes_summary',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original (by value)", x=df.index, y=df['Infector'], mode='lines', marker=dict(color='black')),
+            go.Scatter(name="Original (by reference)", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
+            go.Scatter(name="Full sampling (>150)", x=df_fs2.index, y=df_fs2['Infector'], mode='lines', marker=dict(color=approach_colors[5])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,70],
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5)
+        )
+    fig.show(config=conf)
+
+
 if __name__=="__main__":
     #stats(ii_path, 'all_1')
     #ii_vs_standard_all_infector()
@@ -990,5 +1229,23 @@ if __name__=="__main__":
     #swi_all_infector()
     #stats(fs_path, 'all_1_pType')
     #fs_pType_all_infector()
-    stats(fs_path, 'all_1_pSize')
+    #stats(fs_path, 'all_1_pSize')
     #fs_pSize_all_infector()
+
+    '''
+    stats(standard_path, 'opt_1')
+    stats(its_path, 'ii_sort_both')
+    stats(its_path, 'ii_sort_sus')
+    stats(its_path, 'sample_contacts_sort_both')
+    stats(its_path, 'sample_contacts_sort_sus')
+    stats(its_path, 'sample_sort_both')
+    stats(its_path, 'sample_sort_sus')
+    '''
+
+    #inf_to_sus_infectors()
+    #its_infections()
+
+    #infector_summary()
+
+    basis_standard_comparison_all()
+    basis_standard_comparison_opt()
