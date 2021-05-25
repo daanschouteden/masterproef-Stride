@@ -6,11 +6,52 @@ standard_path = '1-standard'
 ii_path = '2-iterative_intervals'
 swi_path = '3-sampling_with_iteration'
 fs_path = '4-full_sampling'
+its_path = 'inf-to-sus'
 
 
 def convert_results(step, runtype):
     try:
         path = step + "/" + step.split('-')[1] + "_" + runtype + "/Successful runs/1/"
+
+        first = []
+        with open(path + 'first.txt', 'r') as file:
+            for line in file.readlines():
+                val = line.rstrip('\n')
+                if val != "":
+                    first.append(int(val))
+
+        second = []
+        with open(path + 'second.txt', 'r') as file:
+            for line in file.readlines():
+                val = line.rstrip('\n')
+                if val != "":
+                    second.append(int(val))  
+        
+        third = []
+        with open(path + 'third.txt', 'r') as file:
+            for line in file.readlines():
+                val = line.rstrip('\n')
+                if val != "":
+                    third.append(int(val))
+        
+        total = []
+        with open(path + 'total.txt', 'r') as file:
+            for line in file.readlines():
+                val = line.rstrip('\n')
+                if val != "":
+                    total.append(int(val))
+        
+        with open(step + "/" + runtype + '.csv', 'w') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow(['Updating', 'Tracing', 'Infector', 'Total'])
+            for i in range(len(first)):
+                csvwriter.writerow([first[i], second[i], third[i], total[i]])
+    except:
+        print("Error " + step + "_" + runtype + ":", sys.exc_info()[0])
+
+def convert_its_results(step, runtype):
+    try:
+        path = step + "/" + runtype + "/Successful runs/1/"
 
         first = []
         with open(path + 'first.txt', 'r') as file:
@@ -361,7 +402,15 @@ if __name__== "__main__":
     #convert_results(swi_path, 'all_1_pType')
     #convert_times_counts(swi_path, 'all_1_times_counts_pType')
     #convert_times_counts(swi_path, 'all_1_times_counts_pSize')
-    convert_results(fs_path, 'all_1_pType')
+    #convert_results(fs_path, 'all_1_pType')
     #convert_times_counts(fs_path, 'all_1_times_counts_pType')
-    convert_results(fs_path, 'all_1_pSize')
+    #convert_results(fs_path, 'all_1_pSize')
     #convert_times_counts(fs_path, 'all_1_times_counts_pSize')
+
+    #convert_its_results(its_path, 'ii_sort_both')
+    #convert_its_results(its_path, 'ii_sort_sus')
+    #convert_its_results(its_path, 'sample_contacts_sort_both')
+    convert_its_results(its_path, 'sample_contacts_sort_sus')
+    convert_its_results(its_path, 'sample_sort_both')
+    convert_its_results(its_path, 'sample_sort_sus')
+
