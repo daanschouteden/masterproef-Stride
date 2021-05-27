@@ -5,10 +5,16 @@ from numpy.core.numeric import NaN
 import pandas as pd
 import sys
 
+vsc_results_path = '/home/daan/Documents/Masterproef/masterproef/VSC results/'
+standard_path = "1-standard/"
+fs_path = "4-full_sampling/"
+
 contact_vector_path = "/home/daan/opt/stride-302/data/contact_matrix_flanders_conditional_teachers.xml"
 contact_matrix_path = "/home/daan/Documents/Masterproef/matrices/"
 contact_rates_csv = 'contact_rates_original.csv'
 reverse_contact_matrix = 'reverse_contacts_standard.csv'
+
+approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000"]
 
 COLOR_HEATMAP = 'Hot'
 # age,  household_id,  school_id,   work_id,  primary_community,  secondary_community
@@ -807,5 +813,60 @@ def infectious():
     #.update_traces(marker=dict(color='rgba(15, 214, 30, 1)'))
     fig.show(config=conf)
 
+def infected():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "standard_all_1/Successful runs/1/infected.csv", header=None).T
+    df_og.index += 1
+
+    df_fs = pd.read_csv(vsc_results_path + fs_path + "full_sampling_all_1_pType/Successful runs/1/infected.csv", header=None).T
+    df_fs.index += 1
+
+    conf = {    
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'infections',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og[0], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs[0], mode='lines', marker=dict(color=approach_colors[4])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Infected people",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,840000],
+        legend=dict(
+            yanchor="top",
+            y=0.98,
+            xanchor="left",
+            x=0.01,
+            traceorder='normal',
+        ),
+    ).update_xaxes(
+        title_standoff=20,
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=5,
+        gridcolor='white',
+        title_standoff=40,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5)
+        )
+    fig.show(config=conf)
+
 if __name__=="__main__":
-    infectious()
+    infected()
