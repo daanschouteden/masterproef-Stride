@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#PBS -l nodes=1:ppn=2
+#PBS -l nodes=1:ppn=2:cascadelake
 #PBS -l pmem=10gb
 #PBS -l walltime=02:30:00
 #PBS -A llp_h_pds

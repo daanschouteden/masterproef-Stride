@@ -1,0 +1,17 @@
+[2021-05-27 19:11:27.281] [stride_logger] [info] SimController starting up at: Thu May 27 19:11:27 2021
+[2021-05-27 19:11:27.281] [stride_logger] [info] Executing revision: 
+[2021-05-27 19:11:27.281] [stride_logger] [info] Processor count: 36
+[2021-05-27 19:11:27.281] [stride_logger] [info] Creating dir:  2021-05-27-19:11:27/
+[2021-05-27 19:11:27.281] [stride_logger] [info] Max number OpenMP threads in this environment: 1
+[2021-05-27 19:11:27.281] [stride_logger] [info] Configured number of threads: 1
+[2021-05-27 19:11:27.281] [stride_logger] [info] No Event logging requested.
+[2021-05-27 19:11:27.281] [stride_logger] [info] Invoking PopBuilder.
+[2021-05-27 19:11:27.281] [stride_logger] [info] Building default population from file /vsc-hard-mounts/leuven-user/330/vsc33095/masterproef/data/pop_belgium11M_c500_teachers_censushh.csv.
+[2021-05-27 19:12:27.025] [stride_logger] [info] Registering CliViewer
+[2021-05-27 19:12:27.025] [stride_logger] [info] Registering InfectedFileViewer
+[2021-05-27 19:12:27.026] [stride_logger] [info]    SimRunner at start:
+[2021-05-27 19:12:27.148] [stride_logger] [info]       Day:    0  Done, infected count:    1200
+[2021-05-27 19:12:41.606] [stride_logger] [info]       Day:    1  Done, infected count:    1200
+[2021-05-27 19:13:06.521] [stride_logger] [info]       Day:    2  Done, infected count:    1301
+[2021-05-27 19:13:07.109] [stride_logger] [info]    SimRunner done after: 00:00:40:084:307
+[2021-05-27 19:13:07.126] [stride_logger] [info] SimController shutting down after: 00:01:39:847:311

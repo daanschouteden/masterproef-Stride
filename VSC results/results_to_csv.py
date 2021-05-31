@@ -6,12 +6,14 @@ standard_path = '1-standard'
 ii_path = '2-iterative_intervals'
 swi_path = '3-sampling_with_iteration'
 fs_path = '4-full_sampling'
+afs_path = '5-adjusted_full_sampling'
 its_path = 'inf-to-sus'
 
 
 def convert_results(step, runtype):
     try:
         path = step + "/" + step.split('-')[1] + "_" + runtype + "/Successful runs/1/"
+        #path = step + "/" + "full_sampling_"+ runtype + "/Successful runs/1/"
 
         first = []
         with open(path + 'first.txt', 'r') as file:
@@ -410,7 +412,22 @@ if __name__== "__main__":
     #convert_its_results(its_path, 'ii_sort_both')
     #convert_its_results(its_path, 'ii_sort_sus')
     #convert_its_results(its_path, 'sample_contacts_sort_both')
-    convert_its_results(its_path, 'sample_contacts_sort_sus')
-    convert_its_results(its_path, 'sample_sort_both')
-    convert_its_results(its_path, 'sample_sort_sus')
+    #convert_its_results(its_path, 'sample_contacts_sort_sus')
+    #convert_its_results(its_path, 'sample_sort_both')
+    #convert_its_results(its_path, 'sample_sort_sus')
+    
+    #convert_results(fs_path, 'all_1')
+    #convert_results(afs_path, 'all_1')
+    #convert_times_counts(fs_path, 'all_1_times_counts')
+    #convert_times_counts(afs_path, 'all_1_times_counts')
 
+    #------ wrong node adjustments
+    #convert_results(basis_path, 'all_1')
+    #convert_results(standard_path, 'all_1')
+    #convert_results(standard_path, 'all_4')
+    #convert_results(ii_path, 'all_1')
+    #convert_results(swi_path, 'all_1_pType')
+    #convert_results('full_sampling initially', 'all_1_pSize')
+    convert_its_results(its_path, 'ii_sort_both')
+    convert_its_results(its_path, 'ii_sort_sus')
+    convert_its_results(its_path, 'sample_contacts_sort_both')
