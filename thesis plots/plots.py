@@ -23,7 +23,9 @@ COLOR_HEATMAP = 'Hot'
 #df = df.astype(int)
 
 #print(df.head(1))
-print("\n")
+
+xtitle_standoff = 25
+ytitle_standoff = 40
 
 #---------- POPULATION ----------
 def population_age_distribution():
@@ -521,7 +523,12 @@ def contact_heatmap_school():
         xaxis_title="Age (initiator)",
         yaxis_title="Age (recipient)",
         font_size=40,
-        coloraxis=dict(colorbar_x=0.75, colorbar_thickness=25),
+        coloraxis=dict(
+            colorbar_x=0.75,
+            colorbar_thickness=25,
+            cmin=0,
+            cmax=3.5,
+        ),
         xaxis = dict(
             tickmode = 'linear',
             tick0 = 0,
@@ -533,16 +540,16 @@ def contact_heatmap_school():
             dtick = 20,
         ),
     ).update_xaxes(
-        title_standoff=50,
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
+        title_standoff=xtitle_standoff,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
         ticks="outside",
     ).update_yaxes(
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
-        title_standoff=50,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
+        title_standoff=0,
         ticks="outside",
         autorange=True
     )
@@ -571,7 +578,12 @@ def contact_heatmap_work():
         xaxis_title="Age (initiator)",
         yaxis_title="Age (recipient)",
         font_size=40,
-        coloraxis=dict(colorbar_x=0.75, colorbar_thickness=25),
+        coloraxis=dict(
+            colorbar_x=0.75,
+            colorbar_thickness=25,
+            cmin=0,
+            cmax=0.3,
+        ),
         xaxis = dict(
             tickmode = 'linear',
             tick0 = 0,
@@ -583,16 +595,16 @@ def contact_heatmap_work():
             dtick = 20,
         ),
     ).update_xaxes(
-        title_standoff=50,
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
+        title_standoff=xtitle_standoff,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
         ticks="outside",
     ).update_yaxes(
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
-        title_standoff=50,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
+        title_standoff=0,
         ticks="outside",
         autorange=True
     )
@@ -621,7 +633,13 @@ def contact_heatmap_primary():
         xaxis_title="Age (initiator)",
         yaxis_title="Age (recipient)",
         font_size=40,
-        coloraxis=dict(colorbar_x=0.75, colorbar_thickness=25),
+        coloraxis=dict(
+            colorbar_x=0.75,
+            colorbar_thickness=25,
+            cmin=0,
+            cmax=0.8,
+            #colorbar_tickformat=".2f",
+        ),
         xaxis = dict(
             tickmode = 'linear',
             tick0 = 0,
@@ -632,17 +650,18 @@ def contact_heatmap_primary():
             tick0 = 0,
             dtick = 20,
         ),
+        #margin = {'l':0,'r':0,'t':0,'b':0},
     ).update_xaxes(
-        title_standoff=50,
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
+        title_standoff=xtitle_standoff,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
         ticks="outside",
     ).update_yaxes(
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
-        title_standoff=50,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
+        title_standoff=0,
         ticks="outside",
         autorange=True
     )
@@ -671,7 +690,12 @@ def contact_heatmap_secondary():
         xaxis_title="Age (initiator)",
         yaxis_title="Age (recipient)",
         font_size=40,
-        coloraxis=dict(colorbar_x=0.75, colorbar_thickness=25),
+        coloraxis=dict(
+            colorbar_x=0.75,
+            colorbar_thickness=25,
+            cmin=0,
+            cmax=0.8,
+        ),
         xaxis = dict(
             tickmode = 'linear',
             tick0 = 0,
@@ -683,16 +707,16 @@ def contact_heatmap_secondary():
             dtick = 20,
         ),
     ).update_xaxes(
-        title_standoff=50,
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
+        title_standoff=xtitle_standoff,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
         ticks="outside",
     ).update_yaxes(
-        showgrid=True,
-        gridwidth=5,
-        gridcolor='white',
-        title_standoff=50,
+        #showgrid=True,
+        #gridwidth=5,
+        #gridcolor='white',
+        title_standoff=0,
         ticks="outside",
         autorange=True
     )
@@ -869,4 +893,7 @@ def infected():
     fig.show(config=conf)
 
 if __name__=="__main__":
-    infected()
+    #contact_heatmap_school()
+    #contact_heatmap_work()
+    contact_heatmap_primary()
+    #contact_heatmap_secondary()

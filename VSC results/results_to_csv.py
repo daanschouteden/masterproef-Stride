@@ -7,6 +7,7 @@ ii_path = '2-iterative_intervals'
 swi_path = '3-sampling_with_iteration'
 fs_path = '4-full_sampling'
 afs_path = '5-adjusted_full_sampling'
+gfs_path = '6-good_full_sampling'
 its_path = 'inf-to-sus'
 
 
@@ -378,7 +379,7 @@ def convert_times_counts(step, runtype):
                 csvwriter.writerow([times_household[i], counts_household[i], times_k12school[i], counts_k12school[i], times_college[i], counts_college[i], 
                     times_workplace[i], counts_workplace[i], times_primary[i], counts_primary[i], times_secondary[i], counts_secondary[i]])
     except:
-        print("Error " + step + "_" + runtype + ":", sys.exc_info()[0])
+        print("Error " + path +":", sys.exc_info()[0])
 
 def step_results(step):
     convert_results(step, 'all_1')
@@ -428,6 +429,12 @@ if __name__== "__main__":
     #convert_results(ii_path, 'all_1')
     #convert_results(swi_path, 'all_1_pType')
     #convert_results('full_sampling initially', 'all_1_pSize')
-    convert_its_results(its_path, 'ii_sort_both')
-    convert_its_results(its_path, 'ii_sort_sus')
-    convert_its_results(its_path, 'sample_contacts_sort_both')
+    #convert_its_results(its_path, 'ii_sort_both')
+    #convert_its_results(its_path, 'ii_sort_sus')
+    #convert_its_results(its_path, 'sample_contacts_sort_both')
+    #convert_results(gfs_path, 'all_1')
+    #convert_times_counts(gfs_path, 'all_1_times_counts')
+    #convert_results(gfs_path, 'all_1_pSize')
+    #convert_results(gfs_path, 'all_1_pSize150')
+    #convert_times_counts(gfs_path, 'all_1_times_counts_pSize150')
+    convert_times_counts(basis_path, 'all_1_times_counts')

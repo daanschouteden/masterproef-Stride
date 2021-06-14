@@ -14,8 +14,9 @@ reverse_cr_swi = 'reverse_contacts_sampling_with_iteration.csv'
 reverse_cr_swi_1sample = 'reverse_contacts_sampling_with_iteration_1sample.csv'
 reverse_cr_fs_pType = 'reverse_contacts_full_sampling_pType.csv'
 reverse_cr_fs_pSize = 'reverse_contacts_full_sampling_pSize.csv'
+reverse_cr_fsuc = 'reverse_contacts_full_sampling_unique_contacts.csv'
 
-approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000"]
+approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000", "#E153E6", "#722D8E"]
 
 #---------- Contact matrices ----------
 
@@ -658,5 +659,7 @@ def reversed_matrices(csv_name, filename, method_name, color2):
 if __name__=="__main__":
     #reversed_matrices(reverse_cr_swi, 'swi', 'Sampling with iteration', approach_colors[3])
     #reversed_matrices(reverse_cr_swi_1sample, 'swi_1sample', 'Sampling with iteration', approach_colors[3])
-    reversed_matrices(reverse_cr_fs_pType, 'fs_pType', 'Full sampling', approach_colors[4])
-    reversed_matrices(reverse_cr_fs_pSize, 'fs_pSize', 'Full sampling (>150)', approach_colors[5])
+    #reversed_matrices(reverse_cr_fs_pType, 'fs_pType', 'Full sampling', approach_colors[4])
+    #reversed_matrices(reverse_cr_fs_pSize, 'fs_pSize', 'Full sampling (>150)', approach_colors[5])
+    #reversed_matrices('reverse_contacts_new2_full_sampling_pType.csv', 'new_fs_pType', 'New full sampling', 'black')
+    reversed_matrices(reverse_cr_fsuc, 'fsuc', 'Full sampling unique contacts', approach_colors[7])

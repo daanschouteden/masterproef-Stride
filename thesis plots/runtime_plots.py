@@ -9,13 +9,20 @@ standard_path = "1-standard/"
 ii_path = "2-iterative_intervals/"
 swi_path = "3-sampling_with_iteration/"
 fs_path = "4-full_sampling/"
+afs_path = "5-adjusted_full_sampling/"
+fsuc_path = "6-good_full_sampling/"
 its_path = "inf-to-sus/"
+old_fs_path = "full_sampling initially/"
 
 section_colors= ["#eda189", "#bfacd6", "#c7b526", "#25c9ae"]
-threads_colors = ["#542e71", "#fb3640", "#fdca40", "#a799b7"]
+threads_colors = ["#542e71", "#fdca40", "#fb3640", "#90be6d"]
 comparison_section_colors= ["#ef476f", "#06d6a0", "#118ab2", "#ffd166"]
-approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000"]
+approach_colors = ["#FDAA10","#14B37D","#64afff","#1f4397", "#FF9999", "#C20000", "#722D8E", "#E153E6"]
 
+gridwidth = 4
+linewidth = 5
+xtitle_standoff = 25
+ytitle_standoff = 40
 
 #---------- BASIS ----------
 
@@ -39,22 +46,25 @@ def basis_all():
         yaxis_title="Time (in seconds)",
         font_size=40,
         legend_title=None,
+        yaxis_range=[-0.5,70],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -78,33 +88,35 @@ def basis_opt():
         yaxis_title="Time (in seconds)",
         font_size=40,
         legend_title=None,
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
 def basis_infected():
-    df = pd.read_csv(vsc_results_path + "0-basis/basis_all_1/Successful runs/1/2021-04-22-20:15:41/infected.csv", header=None)
+    df = pd.read_csv(vsc_results_path + "0-basis/basis_all_1/Successful runs/1/infected.csv", header=None)
     df.index += 1
     df = df.T # Transpose dataframe
     df.columns = ["all-to-all"]
 
     '''
-    df2 = pd.read_csv(vsc_results_path + "0-basis/basis_opt_1/Successful runs/1/2021-04-22-17:52:43/infected.csv", header=None)
+    df2 = pd.read_csv(vsc_results_path + "0-basis/basis_opt_1/Successful runs/1infected.csv", header=None)
     df2.index += 1
     df2 = df2.T # Transpose dataframe
     df2.columns = ["inf-to-sus"]
@@ -133,23 +145,25 @@ def basis_infected():
             tick0 = 0,
             dtick = 10,
         ),
-        yaxis_range=[0,800000]
+        yaxis_range=[0,800000],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -198,22 +212,24 @@ def basis_all_parallel_infector():
             dtick = 10,
         ),
         yaxis_range=[0,240],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -262,22 +278,24 @@ def basis_opt_parallel_infector():
             dtick = 10,
         ),
         yaxis_range=[0,2],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -325,22 +343,25 @@ def basis_all_parallel_updating():
             tick0 = 0,
             dtick = 10,
         ),
+        yaxis_range=[0,2],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -388,22 +409,25 @@ def basis_opt_parallel_updating():
             tick0 = 0,
             dtick = 10,
         ),
+        yaxis_range=[0,2],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -437,22 +461,25 @@ def standard_all():
         yaxis_title="Time (in seconds)",
         font_size=40,
         legend_title=None,
+        yaxis_range=[-0.5,38],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -476,22 +503,24 @@ def standard_opt():
         yaxis_title="Time (in seconds)",
         font_size=40,
         legend_title=None,
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -540,22 +569,24 @@ def standard_all_parallel_infector():
             dtick = 10,
         ),
         yaxis_range=[0,80],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -604,22 +635,24 @@ def standard_opt_parallel_infector():
             dtick = 10,
         ),
         yaxis_range=[0,1.5],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -662,21 +695,22 @@ def basis_standard_comparison_all():
         yaxis_range=[0,80],
         legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=3)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -719,21 +753,22 @@ def basis_standard_comparison_opt():
         yaxis_range=[0,3],
         legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=50,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=50,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=3)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -742,6 +777,8 @@ def standard():
     standard_opt()
     standard_all_parallel_infector()
     standard_opt_parallel_infector()
+    basis_standard_comparison_all()
+    basis_standard_comparison_opt()
 
 def stats(path, filename):
     df = pd.read_csv(vsc_results_path + path + filename + ".csv")
@@ -781,23 +818,25 @@ def ii_vs_standard_all_infector():
         font_size=40,
         legend_title=None,
         xaxis_range=[1,100],
-        yaxis_range=[0,40],
+        yaxis_range=[0,37],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -837,23 +876,25 @@ def swi_all_infector():
         font_size=40,
         legend_title=None,
         xaxis_range=[1,100],
-        yaxis_range=[0,40],
+        yaxis_range=[0,37],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -872,7 +913,7 @@ def fs_pType_all_infector():
     df_swi.index += 1
     df_swi = df_swi.div(1000000)
 
-    df_fs = pd.read_csv(vsc_results_path + fs_path + "all_1_pType.csv")
+    df_fs = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pType.csv")
     df_fs.index += 1
     df_fs = df_fs.div(1000000)
 
@@ -899,23 +940,25 @@ def fs_pType_all_infector():
         font_size=40,
         legend_title=None,
         xaxis_range=[1,100],
-        yaxis_range=[0,40],
+        yaxis_range=[0,37],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -934,11 +977,11 @@ def fs_pSize_all_infector():
     df_swi.index += 1
     df_swi = df_swi.div(1000000)
 
-    df_fs = pd.read_csv(vsc_results_path + fs_path + "all_1_pType.csv")
+    df_fs = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pType.csv")
     df_fs.index += 1
     df_fs = df_fs.div(1000000)
 
-    df_fs2 = pd.read_csv(vsc_results_path + fs_path + "all_1_pSize.csv")
+    df_fs2 = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pSize.csv")
     df_fs2.index += 1
     df_fs2 = df_fs2.div(1000000)
 
@@ -966,23 +1009,25 @@ def fs_pSize_all_infector():
         font_size=40,
         legend_title=None,
         xaxis_range=[1,100],
-        yaxis_range=[0,40],
+        yaxis_range=[0,37],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -1035,7 +1080,7 @@ def inf_to_sus_infectors():
             #go.Scatter(name="Iterative intervals (sort both)", x=df_ii_both.index, y=df_ii_both['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
             #go.Scatter(name="Iterative intervals (sort susceptibles)", x=df_ii_sus.index, y=df_ii_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
             go.Scatter(name="Sampling contacts (sort both)", x=df_sample_contacts_both.index, y=df_sample_contacts_both['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
-            go.Scatter(name="Sampling contacts (sort susceptibles)", x=df_sample_contacts_sus.index, y=df_sample_contacts_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Sampling contacts (sort susceptibles)", x=df_sample_contacts_sus.index, y=df_sample_contacts_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
             #go.Scatter(name="Sampling (sort both)", x=df_sample_both.index, y=df_sample_both['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
             #go.Scatter(name="Sampling (sort susceptibles)", x=df_sample_sus.index, y=df_sample_sus['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
         ],
@@ -1052,23 +1097,25 @@ def inf_to_sus_infectors():
             xanchor="left",
             x=0.03,
             traceorder='normal',
+            itemsizing='constant',
         ),
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=3)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -1112,9 +1159,9 @@ def its_infections():
             #go.Scatter(name="ii both", x=df_ii_both.index, y=df_ii_both[0], mode='lines', marker=dict(color=approach_colors[1])),
             #go.Scatter(name="ii sus", x=df_ii_sus.index, y=df_ii_sus[0], mode='lines', marker=dict(color=approach_colors[2])),
             #go.Scatter(name="sampling (sort both)", x=df_sample_both.index, y=df_sample_both[0], mode='lines', marker=dict(color=approach_colors[1])),
-            go.Scatter(name="sampling (sort susceptibles)", x=df_sample_sus.index, y=df_sample_sus[0], mode='lines', marker=dict(color=approach_colors[2])),
-            #go.Scatter(name="sampling contacts (sort both)", x=df_sample_contacts_both.index, y=df_sample_contacts_both[0], mode='lines', marker=dict(color=approach_colors[1])),
-            go.Scatter(name="sampling contacts (sort susceptibles)", x=df_sample_contacts_sus.index, y=df_sample_contacts_sus[0], mode='lines', marker=dict(color=approach_colors[4])),
+            go.Scatter(name="Sampling (sort susceptibles)", x=df_sample_sus.index, y=df_sample_sus[0], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Sampling contacts (sort both)", x=df_sample_contacts_both.index, y=df_sample_contacts_both[0], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling contacts (sort susceptibles)", x=df_sample_contacts_sus.index, y=df_sample_contacts_sus[0], mode='lines', marker=dict(color=approach_colors[4])),
         ],
     ).update_layout(
         xaxis_title="Day",
@@ -1129,23 +1176,25 @@ def its_infections():
             xanchor="left",
             x=0.01,
             traceorder='normal',
+            itemsizing='constant',
         ),
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
 
@@ -1168,13 +1217,13 @@ def infector_summary():
     df_swi.index += 1
     df_swi = df_swi.div(1000000)
 
-    df_fs = pd.read_csv(vsc_results_path + fs_path + "all_1_pType.csv")
-    df_fs.index += 1
-    df_fs = df_fs.div(1000000)
-
-    df_fs2 = pd.read_csv(vsc_results_path + fs_path + "all_1_pSize.csv")
+    df_fs2 = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pSize.csv")
     df_fs2.index += 1
     df_fs2 = df_fs2.div(1000000)
+
+    df_fsuc = pd.read_csv(vsc_results_path + fsuc_path + "all_1_pSize150.csv")
+    df_fsuc.index += 1
+    df_fsuc = df_fsuc.div(1000000)
 
     conf = {
         'toImageButtonOptions': {
@@ -1192,8 +1241,8 @@ def infector_summary():
             go.Scatter(name="Original (by reference)", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
             go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
             go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
-            #go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
             go.Scatter(name="Full sampling (>150)", x=df_fs2.index, y=df_fs2['Infector'], mode='lines', marker=dict(color=approach_colors[5])),
+            go.Scatter(name="Full sampling<br>unique contacts (>150)", x=df_fsuc.index, y=df_fsuc['Infector'], mode='lines', marker=dict(color=approach_colors[7])),
         ],
     ).update_layout(
         xaxis_title="Day",
@@ -1202,24 +1251,222 @@ def infector_summary():
         legend_title=None,
         xaxis_range=[1,100],
         yaxis_range=[0,70],
+        legend={'itemsizing': 'constant'},
     ).update_xaxes(
-        title_standoff=20,
+        title_standoff=xtitle_standoff,
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
         ticks="outside",
     ).update_yaxes(
         showgrid=True,
-        gridwidth=5,
+        gridwidth=gridwidth,
         gridcolor='white',
-        title_standoff=40,
+        title_standoff=ytitle_standoff,
         ticks="outside",
         tickformat='',
     ).update_traces(
         line=dict(
-            width=5)
+            width=linewidth,
+            )
         )
     fig.show(config=conf)
+
+
+def infector_summary_its():
+    df = pd.read_csv(vsc_results_path + basis_path + "opt_1.csv")
+    df.index += 1
+    df = df.div(1000000)
+
+    df_og = pd.read_csv(vsc_results_path + standard_path + "opt_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + its_path + "ii_sort_sus.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'infector_runtimes_summary_its',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original (by value)", x=df.index, y=df['Infector'], mode='lines', marker=dict(color='black')),
+            go.Scatter(name="Original (by reference)", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals<br>(sort susceptibles)", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,1.5],
+        legend={'itemsizing': 'constant'},
+    ).update_xaxes(
+        title_standoff=xtitle_standoff,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        title_standoff=ytitle_standoff,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=linewidth,
+            )
+        )
+    fig.show(config=conf)
+
+
+def fsuc_pType_all_infector():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    df_swi = pd.read_csv(vsc_results_path + swi_path + "all_1_pType.csv")
+    df_swi.index += 1
+    df_swi = df_swi.div(1000000)
+
+    df_fs = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pSize.csv")
+    df_fs.index += 1
+    df_fs = df_fs.div(1000000)
+
+    df_fsuc = pd.read_csv(vsc_results_path + fsuc_path + "all_1.csv")
+    df_fsuc.index += 1
+    df_fsuc = df_fsuc.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'fsuc_pType_vs_rest_infector',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
+            go.Scatter(name="Full sampling (>150)", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[5])),
+            go.Scatter(name="Full sampling<br>unique contacts", x=df_fsuc.index, y=df_fsuc['Infector'], mode='lines', marker=dict(color=approach_colors[6])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,37],
+        legend={'itemsizing': 'constant'},
+    ).update_xaxes(
+        title_standoff=xtitle_standoff,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        title_standoff=ytitle_standoff,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=linewidth,
+            )
+        )
+    fig.show(config=conf)
+
+def fsuc_pSize_all_infector():
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    df_swi = pd.read_csv(vsc_results_path + swi_path + "all_1_pType.csv")
+    df_swi.index += 1
+    df_swi = df_swi.div(1000000)
+
+    df_fs = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pSize.csv")
+    df_fs.index += 1
+    df_fs = df_fs.div(1000000)
+
+    df_fsuc = pd.read_csv(vsc_results_path + fsuc_path + "all_1_pSize150.csv")
+    df_fsuc.index += 1
+    df_fsuc = df_fsuc.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'fsuc_pSize_vs_rest_infector',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Full sampling", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
+            go.Scatter(name="Full sampling (>150)", x=df_fs.index, y=df_fs['Infector'], mode='lines', marker=dict(color=approach_colors[5])),
+            go.Scatter(name="Full sampling<br>unique contacts (>150)", x=df_fsuc.index, y=df_fsuc['Infector'], mode='lines', marker=dict(color=approach_colors[7])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,37],
+        legend={'itemsizing': 'constant'},
+    ).update_xaxes(
+        title_standoff=xtitle_standoff,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        title_standoff=ytitle_standoff,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=linewidth,
+            )
+        )
+    fig.show(config=conf)
+
 
 
 if __name__=="__main__":
@@ -1246,6 +1493,25 @@ if __name__=="__main__":
     #its_infections()
 
     #infector_summary()
+    infector_summary_its()
 
-    basis_standard_comparison_all()
-    basis_standard_comparison_opt()
+    #basis_standard_comparison_all()
+    #basis_standard_comparison_opt()
+
+    #------------------ wrongnodes adjustments
+    #basis_all()
+    #stats(basis_path, 'all_1')
+    #basis_all_parallel_updating()
+    #basis_all_parallel_infector()
+    #basis_opt_parallel_infector()
+    #standard()
+
+    #ii_vs_standard_all_infector()
+    #swi_all_infector()
+    #fs_pSize_all_infector()
+    #stats(swi_path, 'all_1_pType')
+    #inf_to_sus_infectors()
+    #stats(old_fs_path, 'all_1_pSize')
+    #fsuc_pType_all_infector()
+    #fsuc_pSize_all_infector()
+    #stats(fsuc_path, 'all_1_pSize150')
