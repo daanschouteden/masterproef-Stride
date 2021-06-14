@@ -202,7 +202,7 @@ void Sim::TimeStep(string& first, string& second, string& third,
 
 		// Perform universal testing 
 		//m_universal_testing.PerformUniversalTesting(m_population, m_handlers[0], m_calendar,m_public_health_agency);
-/*
+	/* used to measure
 	std::vector<long> times_household(1501, 0);
 	std::vector<long> times_k12school(1501, 0);
 	std::vector<long> times_college(1501, 0);
@@ -216,7 +216,9 @@ void Sim::TimeStep(string& first, string& second, string& third,
 	std::vector<int> counts_workplace(1501, 0);
 	std::vector<int> counts_primary(1501, 0);
 	std::vector<int> counts_secondary(1501, 0);
-*/
+	*/
+
+	// used to measure
 	std::vector<long> times(1501, 0);
 	std::vector<int> counts(1501, 0);
 
@@ -235,7 +237,7 @@ void Sim::TimeStep(string& first, string& second, string& third,
 					continue;
 			}
 			
-			/*
+			/* used to measure
 			if (typ == ContactType::Id::Household) {
 				printf("Household\n");
 					
@@ -336,8 +338,8 @@ void Sim::TimeStep(string& first, string& second, string& third,
 								intergeneration_distancing_factor,m_cnt_reduction_intergeneration_cutoff,
 								m_population,cnt_intensity_householdCluster, times, counts, mt_gen);
 			}
-
-			/*
+			
+			/* used to measure
 			auto stop4 = high_resolution_clock::now();
 			auto duration4 = duration_cast<microseconds>(stop4 - start4);
 			if (typ == ContactType::Id::Household)
@@ -358,7 +360,7 @@ void Sim::TimeStep(string& first, string& second, string& third,
 		}
 	}
 
-/*
+	/* used to measure
 	// weekend
 	if (measure) {
 		cout << "writing out weekend times.txt" << endl;
@@ -433,9 +435,9 @@ void Sim::TimeStep(string& first, string& second, string& third,
 		}
 		fstr.close();
 	}
-*/
+	*/
 	
-	/*
+	/* used to measure
 	household.append("\n");
 	k12school.append("\n");
 	college.append("\n");

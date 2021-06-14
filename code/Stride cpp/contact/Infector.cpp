@@ -29,6 +29,7 @@
 #include <iostream>
 #include <random>
 #include <boost/random.hpp>
+#include <boost/functional/hash/hash.hpp>
 
 #include <unordered_set>
 
@@ -37,6 +38,7 @@ using namespace std::chrono;
 using namespace std;
 
 namespace {
+typedef std::pair<int, int> Pair;
 
 /// Primary LOG_POLICY policy, implements LogMode::None.
 /// \tparam LL
@@ -256,8 +258,9 @@ inline double CustomGetContactProbability(double reference_num_contacts, const s
 
 namespace stride {
 
+//------------------------------------- ALL-TO-ALL ------------------------------------------------
 
-/* ORIGINAL
+// ORIGINAL
 //-------------------------------------------------------------------------------------------------
 // Definition for ContactLogMode::Contacts,
 // both with track_index_case false and true.
@@ -269,7 +272,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 								 double cnt_reduction_work, double cnt_reduction_other, double cnt_reduction_school,
 								 double cnt_reduction_intergeneration, unsigned int cnt_reduction_intergeneration_cutoff,
 								 std::shared_ptr<Population> population, double m_cnt_intensity_householdCluster,
-                                                                 std::vector<long>& times, std::vector<int>& counts)
+                                                                 std::vector<long>& times, std::vector<int>& counts, std::mt19937& mt_gen)
 {
         using LP = LOG_POLICY<LL>;
 
@@ -279,7 +282,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         const auto  pSize    = pMembers.size();         // const auto  pSize    = pool.PeopleInPool();
         const auto  tProb    = transProfile.GetProbability();
 
-        // auto start = high_resolution_clock::now();
+        auto start = high_resolution_clock::now();
         
         // check all contacts
         for (size_t i_person1 = 0; i_person1 < pSize; i_person1++) {
@@ -348,7 +351,6 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         counts[pSize]++;
         
 }
-*/
 
 /* ITERATIVE INTERVALS
 //-------------------------------------------------------------------------------------------------
@@ -626,7 +628,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 }
 */
 
-// SAMPLING WITH ITERATION
+/* SAMPLING WITH ITERATION
 //-------------------------------------------------------------------------------------------------
 // Definition for ContactLogMode::Contacts,
 // both with track_index_case false and true.
@@ -952,8 +954,9 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         //times[pSize] += duration.count();
         //counts[pSize]++;
 }
+*/
 
-/* FULL SAMPLING
+/* FULL SAMPLING (>150)
 //-------------------------------------------------------------------------------------------------
 // Definition for ContactLogMode::Contacts,
 // both with track_index_case false and true.
@@ -978,7 +981,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
         //auto start = high_resolution_clock::now();
 
         // original
-        if (pType == Id::Household) {
+        if (pSize < 150) {
                 // check all contacts
                 for (size_t i_person1 = 0; i_person1 < pSize; i_person1++) {
                         // check if member is present today
@@ -1092,7 +1095,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 
                                         binomial_distribution<int> distr(people_in_interval1-1, contactProb);
 
-                                        for (size_t i_person1 = 0; i_person1 < pIntervalAmounts[interval1]; i_person1++) {
+                                        for (int i_person1 = 0; i_person1 < pIntervalAmounts[interval1]; i_person1++) {
                                                 const auto p1 = pMembers[i_person1+index];
                                                 if (!p1->IsInPool(pType)) {
                                                         continue;
@@ -1105,7 +1108,7 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 
                                                 // Every remaining person will have contact
                                                 if (sampleSize >= people_in_interval2) {
-                                                        for (size_t i_contact = 0; i_contact < pIntervalAmounts[interval2]; i_contact++) {
+                                                        for (int i_contact = 0; i_contact < pIntervalAmounts[interval2]; i_contact++) {
                                                                 // Check if member is present today
                                                                 const auto p2 = pMembers[i_contact+index2];
                                                                 if (!p2->IsInPool(pType) || p1 == p2) {
@@ -1159,7 +1162,8 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
                                                         // Number 2 is made to prevent infinite looping when less people are present in the pool than sampleSize
                                                         while ((good_samples < sampleSize) && (sampled < people_in_interval2)) {
 
-                                                                int i_sampled = (int) (cHandler()*people_in_interval2) + index2;
+                                                                int i_contact = (int) (cHandler()*people_in_interval2);
+                                                                int i_sampled = i_contact + index2;
 
                                                                 // i_sampled has already been drawn
                                                                 if ( std::find(drawn_samples.begin(), drawn_samples.begin()+sampled, i_sampled) != drawn_samples.begin()+sampled ) {
@@ -1349,13 +1353,393 @@ void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& pro
 }
 */
 
-//----------------------------------------------
-//----------------------------------------------
-//----------------------------------------------
-//----------------------------------------------
-//----------------------------------------------
+/* FULL SAMPLING UNIQUE CONTACTS (>150)
+//-------------------------------------------------------------------------------------------------
+// Definition for ContactLogMode::Contacts,
+// both with track_index_case false and true.
+//-------------------------------------------------------------------------------------------------
+template <EventLogMode::Id LL, bool TIC, bool TO>
+void Infector<LL, TIC, TO>::Exec(ContactPool& pool, const AgeContactProfile& profile,
+                                 const TransmissionProfile& transProfile, ContactHandler& cHandler,
+                                 unsigned short int simDay, shared_ptr<spdlog::logger> eventLogger,
+								 double cnt_reduction_work, double cnt_reduction_other, double cnt_reduction_school,
+								 double cnt_reduction_intergeneration, unsigned int cnt_reduction_intergeneration_cutoff,
+								 std::shared_ptr<Population> population, double m_cnt_intensity_householdCluster,
+                                                                 std::vector<long>& times, std::vector<int>& counts, std::mt19937& mt_gen)
+{
+        using LP = LOG_POLICY<LL>;
 
-/* ORIGINAL
+        // set up some stuff
+        const auto  pType    = pool.m_pool_type;
+        const auto& pMembers = pool.m_members;
+        const auto  pSize    = pMembers.size();         // const auto  pSize    = pool.PeopleInPool();
+        const auto  tProb    = transProfile.GetProbability();
+
+        //auto start = high_resolution_clock::now();
+
+        // original
+        if (pSize < 150) {
+                // check all contacts
+                for (size_t i_person1 = 0; i_person1 < pSize; i_person1++) {
+                        // check if member is present today
+                        const auto p1 = pMembers[i_person1];                        
+                        if (!p1->IsInPool(pType)) {
+                                continue;
+                        }
+                        // loop over possible contacts (contacts can be initiated by each member)
+                        for (size_t i_person2 = i_person1 + 1; i_person2 < pSize; i_person2++) {
+                                // check if not the same person
+                                if (i_person1 == i_person2) {
+                                        continue;
+                                }
+                                // check if member is present today
+                                const auto p2 = pMembers[i_person2];
+                                if (!p2->IsInPool(pType)) {
+                                        continue;
+                                }
+
+                                // check for contact
+                                const double cProb = GetContactProbability(profile, p1, p2, pSize, pType,
+                                                cnt_reduction_work, cnt_reduction_other,cnt_reduction_school,cnt_reduction_intergeneration,
+                                                                        cnt_reduction_intergeneration_cutoff,population,m_cnt_intensity_householdCluster);
+                                                                        
+                                if (cHandler.HasContact(cProb)) {
+                                        // log contact if person 1 is participating in survey
+                                        LP::Contact(eventLogger, p1, p2, pType, simDay, cProb, tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()));
+                                        // log contact if person 2 is participating in survey
+                                        LP::Contact(eventLogger, p2, p1, pType, simDay, cProb, tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()));
+
+                                        // if track&trace is in place, option to register (both) contact(s)
+                                        p1->RegisterContact(p2);
+                                        p2->RegisterContact(p1);
+
+                                        // transmission & infection.
+                                        // note: no tertiary infections with TIC; so mark new case as 'recovered'
+                                        auto& h1 = p1->GetHealth();
+                                        auto& h2 = p2->GetHealth();
+
+                                        // if h1 infectious, account for susceptibility of p2
+                                        if (h1.IsInfectious() && h2.IsSusceptible() &&
+                                                cHandler.HasTransmission(tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()))) {
+                                                        h2.StartInfection(h1.GetIdIndexCase(),p1->GetId());
+                                                        if (TIC)
+                                                                        h2.StopInfection();
+                                                        LP::Trans(eventLogger, p1, p2, pType, simDay, h1.GetIdIndexCase());
+                                        }
+
+                                        // if h2 infectious, account for susceptibility of p1
+                                        if (h2.IsInfectious() && h1.IsSusceptible() &&
+                                                cHandler.HasTransmission(tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()))) {
+                                                        h1.StartInfection(h2.GetIdIndexCase(),p2->GetId());
+                                                        if (TIC)
+                                                                        h1.StopInfection();
+                                                        LP::Trans(eventLogger, p2, p1, pType, simDay, h2.GetIdIndexCase());
+                                        }
+                                }
+                        }
+                }
+        }
+        // sampling
+        else {
+                const auto pIntervalAmounts = pool.SortMembersByAgeIntervalsYO();
+                const auto pNumberOfIntervals = pIntervalAmounts.size();
+
+                unsigned int index = 0;
+                for (unsigned int interval1 = 0; interval1 < pNumberOfIntervals; interval1++) {
+                        unsigned int people_in_interval1 = pIntervalAmounts[interval1];
+                        if (people_in_interval1 == 0) {
+                                continue;
+                        }
+
+                        double reference_num_contacts1 = profile[EffectiveAge(static_cast<unsigned int>(pMembers[index]->GetAge()))];
+
+                        unsigned int index2 = index;
+                        for (unsigned int interval2 = interval1; interval2 < pNumberOfIntervals; interval2++) {
+                                unsigned int people_in_interval2 = pIntervalAmounts[interval2];
+                                if (people_in_interval2 == 0) {
+                                        continue;
+                                }
+
+                                // Compare everyone from the same interval too
+                                if (interval1 == interval2) {
+                                        double reference_num_contacts = reference_num_contacts1;
+
+                                        // initiate a contact adjustment factor, to account for physical distancing and/or contact intensity
+                                        double cnt_adjustment_factor = 1;
+                                        // account for physical distancing at work and in the community
+                                        if(pType == Id::Workplace){
+                                                cnt_adjustment_factor = (1-cnt_reduction_work);
+                                        }
+                                        // account forinterval2 physical distancing in the community
+                                        else if((pType == Id::PrimaryCommunity || pType == Id::SecondaryCommunity)){
+                                                // apply inter-generation distancing factor if age cutoff is > 0 and at least one age is > cutoff
+                                                if((cnt_reduction_intergeneration > 0) &&
+                                                ((pMembers[index]->GetAge() > cnt_reduction_intergeneration_cutoff) || (pMembers[index2]->GetAge() > cnt_reduction_intergeneration_cutoff))){
+                                                        cnt_adjustment_factor = (1-cnt_reduction_intergeneration);
+                                                } else {
+                                                        // apply uniform community distancing
+                                                        cnt_adjustment_factor = (1-cnt_reduction_other);
+                                                }
+                                        }
+                                        
+                                        reference_num_contacts *= cnt_adjustment_factor;
+
+                                        double contactProb = (2 - sqrt(4-(4*(reference_num_contacts1/(pSize-1))))) / 2;
+
+                                        if (contactProb >= 1) {
+                                                contactProb = 0.999;
+                                        }
+
+                                        binomial_distribution<int> distr(people_in_interval1-1, contactProb);
+
+                                        // tuples are always ordered lhs<rhs
+                                        std::unordered_set<
+                                                Pair, 
+                                                boost::hash< Pair > 
+                                        > drawn_contacts;
+
+                                        for (int i_person1 = 0; i_person1 < pIntervalAmounts[interval1]; i_person1++) {
+                                                const auto p1 = pMembers[i_person1+index];
+                                                if (!p1->IsInPool(pType)) {
+                                                        continue;
+                                                }
+                                                // The number of people 1 person will have contact with
+                                                int sampleSize = distr(mt_gen);
+                                                if (sampleSize == 0) {
+                                                        continue;
+                                                }
+
+                                                // Every remaining person will have contact
+                                                if (sampleSize >= people_in_interval2) {
+                                                        for (int i_contact = 0; i_contact < pIntervalAmounts[interval2]; i_contact++) {
+                                                                // Check if member is present today
+                                                                const auto p2 = pMembers[i_contact+index2];
+                                                                if (!p2->IsInPool(pType) || p1 == p2) {
+                                                                        continue;
+                                                                }
+
+                                                                // Order tuple lhs<rhs
+                                                                Pair contact_pair = (i_person1 < i_contact) ? std::make_pair(i_person1, i_contact) : std::make_pair(i_contact, i_person1);
+                                                                drawn_contacts.insert(contact_pair);
+                                                        }
+                                                }
+                                                else {
+                                                        unsigned int sampled = 1; // Because p1 is already drawn
+                                                        unsigned int good_samples = 0;
+
+                                                        std::vector<int> drawn_samples(people_in_interval2, -1);
+                                                        // The person can not draw itself
+                                                        drawn_samples[0] = i_person1+index;
+
+                                                        // stop if:
+                                                        // 1) drawn the required samples
+                                                        // 2) when everyone of the interval has been picked
+                                                        // Number 2 is made to prevent infinite looping when less people are present in the pool than sampleSize
+                                                        while ((good_samples < sampleSize) && (sampled < people_in_interval2)) {
+
+                                                                int i_contact = (int) (cHandler()*people_in_interval2);
+                                                                int i_sampled = i_contact + index2;
+
+                                                                // i_sampled has already been drawn
+                                                                if ( std::find(drawn_samples.begin(), drawn_samples.begin()+sampled, i_sampled) != drawn_samples.begin()+sampled ) {
+                                                                        continue;
+                                                                }
+                                                                
+                                                                drawn_samples[sampled] = i_sampled;
+                                                                sampled++;
+
+                                                                // Check if member is present today
+                                                                const auto p2 = pMembers[i_sampled];
+                                                                if (!p2->IsInPool(pType) || p1 == p2) {
+                                                                        continue;
+                                                                }
+                                                                good_samples++;
+
+                                                                // Order tuple lhs<rhs
+                                                                Pair contact_pair = (i_person1 < i_contact) ? std::make_pair(i_person1, i_contact) : std::make_pair(i_contact, i_person1);
+                                                                drawn_contacts.insert(contact_pair);
+                                                        }
+                                                }
+                                        }
+                                        // Perform all contacts
+                                        for (const auto& contact_pair: drawn_contacts) {
+                                                auto p1 = pMembers[contact_pair.first+index];
+                                                auto p2 = pMembers[contact_pair.second+index];
+
+                                                // log contact if person 1 is participating in survey
+                                                LP::Contact(eventLogger, p1, p2, pType, simDay, contactProb, tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()));
+                                                // log contact if person 2 is participating in survey
+                                                LP::Contact(eventLogger, p2, p1, pType, simDay, contactProb, tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()));
+
+                                                // if track&trace is in place, option to register (both) contact(s)
+                                                p1->RegisterContact(p2);
+                                                p2->RegisterContact(p1);
+
+                                                // transmission & infection.
+                                                // note: no tertiary infections with TIC; so mark new case as 'recovered'
+                                                auto& h1 = p1->GetHealth();
+                                                auto& h2 = p2->GetHealth();
+
+                                                // if h1 infectious, account for susceptibility of p2
+                                                if (h1.IsInfectious() && h2.IsSusceptible() &&
+                                                cHandler.HasTransmission(tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()))) {
+                                                        h2.StartInfection(h1.GetIdIndexCase(),p1->GetId());
+                                                        if (TIC)
+                                                                h2.StopInfection();
+                                                        LP::Trans(eventLogger, p1, p2, pType, simDay, h1.GetIdIndexCase());
+                                                }
+
+                                                // if h2 infectious, account for susceptibility of p1
+                                                if (h2.IsInfectious() && h1.IsSusceptible() &&
+                                                cHandler.HasTransmission(tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()))) {
+                                                        h1.StartInfection(h2.GetIdIndexCase(),p2->GetId());
+                                                        if (TIC)
+                                                                h1.StopInfection();
+                                                        LP::Trans(eventLogger, p2, p1, pType, simDay, h2.GetIdIndexCase());
+                                                }
+                                        }
+                                }
+                                else {
+                                        double contactProb = GetContactProbability(profile, pMembers[index], pMembers[index2], pSize, pType,
+                                                cnt_reduction_work, cnt_reduction_other,cnt_reduction_school, cnt_reduction_intergeneration,
+                                                                                cnt_reduction_intergeneration_cutoff,population,m_cnt_intensity_householdCluster);
+
+                                        binomial_distribution<int> distr(people_in_interval2, contactProb);
+
+                                        for (size_t i_person1 = 0; i_person1 < pIntervalAmounts[interval1]; i_person1++) {
+                                                const auto p1 = pMembers[i_person1+index];
+                                                if (!p1->IsInPool(pType)) {
+                                                        continue;
+                                                }
+                                                // The number of people 1 person will have contact with
+                                                int sampleSize = distr(mt_gen);
+                                                if (sampleSize == 0) {
+                                                        continue;
+                                                }
+
+
+                                                // Every remaining person will have contact
+                                                if (sampleSize >= people_in_interval2) {
+                                                        for (size_t i_contact = 0; i_contact < pIntervalAmounts[interval2]; i_contact++) {
+                                                                // Check if member is present today
+                                                                const auto p2 = pMembers[i_contact+index2];
+                                                                if (!p2->IsInPool(pType)) {
+                                                                        continue;
+                                                                }
+
+                                                                // log contact if person 1 is participating in survey
+                                                                LP::Contact(eventLogger, p1, p2, pType, simDay, contactProb, tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()));
+                                                                // log contact if person 2 is participating in survey
+                                                                LP::Contact(eventLogger, p2, p1, pType, simDay, contactProb, tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()));
+
+                                                                // if track&trace is in place, option to register (both) contact(s)
+                                                                p1->RegisterContact(p2);
+                                                                p2->RegisterContact(p1);
+
+                                                                // transmission & infection.
+                                                                // note: no tertiary infections with TIC; so mark new case as 'recovered'
+                                                                auto& h1 = p1->GetHealth();
+                                                                auto& h2 = p2->GetHealth();
+
+                                                                // if h1 infectious, account for susceptibility of p2
+                                                                if (h1.IsInfectious() && h2.IsSusceptible() &&
+                                                                cHandler.HasTransmission(tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()))) {
+                                                                        h2.StartInfection(h1.GetIdIndexCase(),p1->GetId());
+                                                                        if (TIC)
+                                                                                h2.StopInfection();
+                                                                        LP::Trans(eventLogger, p1, p2, pType, simDay, h1.GetIdIndexCase());
+                                                                }
+
+                                                                // if h2 infectious, account for susceptibility of p1
+                                                                if (h2.IsInfectious() && h1.IsSusceptible() &&
+                                                                cHandler.HasTransmission(tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()))) {
+                                                                        h1.StartInfection(h2.GetIdIndexCase(),p2->GetId());
+                                                                        if (TIC)
+                                                                                h1.StopInfection();
+                                                                        LP::Trans(eventLogger, p2, p1, pType, simDay, h2.GetIdIndexCase());
+                                                                }
+                                                        }
+                                                }
+                                                else {
+                                                        unsigned int sampled = 0;
+                                                        unsigned int good_samples = 0;
+
+                                                        std::vector<int> drawn_samples(people_in_interval2, -1);
+
+                                                        // stop if:
+                                                        // 1) drawn the required samples
+                                                        // 2) when everyone of the interval has been picked
+                                                        // Number 2 is made to prevent infinite looping when less people are present in the pool than sampleSize
+                                                        while ((good_samples < sampleSize) && (sampled < people_in_interval2)) {
+
+                                                                int i_sampled = (int) (cHandler()*people_in_interval2) + index2;
+
+                                                                // i_sampled has already been drawn
+                                                                if ( std::find(drawn_samples.begin(), drawn_samples.begin()+sampled, i_sampled) != drawn_samples.begin()+sampled ) {
+                                                                        continue;
+                                                                }
+                                                                
+                                                                drawn_samples[sampled] = i_sampled;
+                                                                sampled++;
+
+                                                                // Check if member is present today
+                                                                const auto p2 = pMembers[i_sampled];
+                                                                if (!p2->IsInPool(pType)) {
+                                                                        continue;
+                                                                }
+                                                                good_samples++;
+
+                                                                // log contact if person 1 is participating in survey
+                                                                LP::Contact(eventLogger, p1, p2, pType, simDay, contactProb, tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()));
+                                                                // log contact if person 2 is participating in survey
+                                                                LP::Contact(eventLogger, p2, p1, pType, simDay, contactProb, tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()));
+
+                                                                // if track&trace is in place, option to register (both) contact(s)
+                                                                p1->RegisterContact(p2);
+                                                                p2->RegisterContact(p1);
+
+                                                                // transmission & infection.
+                                                                // note: no tertiary infections with TIC; so mark new case as 'recovered'
+                                                                auto& h1 = p1->GetHealth();
+                                                                auto& h2 = p2->GetHealth();
+
+                                                                // if h1 infectious, account for susceptibility of p2
+                                                                if (h1.IsInfectious() && h2.IsSusceptible() &&
+                                                                cHandler.HasTransmission(tProb * p1->GetHealth().GetRelativeTransmission(p2->GetAge()))) {
+                                                                        h2.StartInfection(h1.GetIdIndexCase(),p1->GetId());
+                                                                        if (TIC)
+                                                                                h2.StopInfection();
+                                                                        LP::Trans(eventLogger, p1, p2, pType, simDay, h1.GetIdIndexCase());
+                                                                }
+
+                                                                // if h2 infectious, account for susceptibility of p1
+                                                                if (h2.IsInfectious() && h1.IsSusceptible() &&
+                                                                cHandler.HasTransmission(tProb * p2->GetHealth().GetRelativeTransmission(p1->GetAge()))) {
+                                                                        h1.StartInfection(h2.GetIdIndexCase(),p2->GetId());
+                                                                        if (TIC)
+                                                                                h1.StopInfection();
+                                                                        LP::Trans(eventLogger, p2, p1, pType, simDay, h2.GetIdIndexCase());
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                                index2 += pIntervalAmounts[interval2];
+                        }
+                        index += pIntervalAmounts[interval1];
+                }
+        }
+
+        //auto stop = high_resolution_clock::now();
+        //auto duration = duration_cast<microseconds>(stop - start);
+        //times[pSize] += duration.count();
+        //counts[pSize]++;
+}
+*/
+
+//----------------------------------- INF-TO-SUS ------------------------------------------------
+
+// ORIGINAL
 //-------------------------------------------------------------------------------------------
 // Definition for ContactLogMode::None and ContactLogMode::Transmission
 // both with track_index_case false and true.
@@ -1424,7 +1808,7 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
                 }
         }       
 }
-*/
+
 
 /* ITERATIVE INTERVALS + SORT SUSCEPTIBLES
 //-------------------------------------------------------------------------------------------
@@ -2117,7 +2501,7 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
 }
 */
 
-// SAMPLING CONTACTS + SORT SUSCEPTIBLES
+/* SAMPLING CONTACTS + SORT SUSCEPTIBLES
 //-------------------------------------------------------------------------------------------
 // Definition for ContactLogMode::None and ContactLogMode::Transmission
 // both with track_index_case false and true.
@@ -2309,7 +2693,7 @@ void Infector<LL, TIC, true>::Exec(ContactPool& pool, const AgeContactProfile& p
                 }
         }
 }
-
+*/
 
 /* SAMPLING CONTACTS + SORT BOTH
 //-------------------------------------------------------------------------------------------

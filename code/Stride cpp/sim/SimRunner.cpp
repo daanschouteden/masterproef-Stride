@@ -43,6 +43,7 @@ SimRunner::SimRunner(const ptree& configPt, shared_ptr<Sim> sim)
 
 void SimRunner::Run(unsigned int numSteps)
 {
+        // used to measure
         string first="", second="", third="", total="", household="", k12school="", college="", workplace="", primary="", secondary="", cluster="";
 
 	std::random_device rd;
@@ -84,6 +85,7 @@ void SimRunner::Run(unsigned int numSteps)
 
                 m_clock.Stop();
         }
+        // used to measure
         ofstream fstr;
         fstr.open("first.txt", ios::out);
         fstr << first << endl;
@@ -98,7 +100,7 @@ void SimRunner::Run(unsigned int numSteps)
         fstr << total << endl;
         fstr.close();
 
-        /*
+        /* used to measure
         fstr.open("1household.txt", ios::out);
         fstr << household << endl;
         fstr.close();
