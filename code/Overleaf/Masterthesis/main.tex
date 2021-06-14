@@ -1,0 +1,174 @@
+\documentclass[a4paper, 11pt, twoside, openright]{report}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage[hyphens]{url}
+\usepackage{lscape}
+\usepackage[labelformat=simple]{subcaption}
+\renewcommand\thesubfigure{(\alph{subfigure})}
+\renewcommand\thesubtable{(\alph{subtable})}
+\usepackage[subfigure]{tocloft}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{soul}
+\usepackage{booktabs}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{multirow}
+\usepackage{arydshln}
+\usepackage{comment}
+\usepackage[]{quoting}
+\usepackage{pdfpages}
+
+\usepackage{amsthm} 
+\theoremstyle{definition}
+\newtheorem{example}{Example}
+
+\usepackage{amsfonts}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\algblockdefx[Foreach]{Foreach}{EndForeach}[1]{\textbf{for each} #1 \textbf{do}}{\textbf{end for}}
+\makeatletter
+\ifthenelse{\equal{\ALG@noend}{t}}{\algtext*{EndForeach}}{}
+\makeatother
+
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{gensymb}
+\usepackage{xfrac}
+\usepackage{longtable}
+\usepackage[titletoc]{appendix}
+\counterwithout{footnote}{chapter}
+
+\usepackage{silence}
+\WarningFilter{latex}{Text page}
+
+\usepackage{tocloft}
+\setlength{\cftchapnumwidth}{2em}
+\cftsetindents{section}{2em}{2.4em}
+\cftsetindents{subsection}{4.4em}{3.2em}
+
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.25}
+
+\usepackage[colorinlistoftodos]{todonotes}
+
+% To use mainmatter in report
+\makeatletter
+\newcommand\frontmatter{%
+    \cleardoublepage
+  %\@mainmatterfalse
+  \pagenumbering{roman}}
+\newcommand\mainmatter{%
+    \clearpage
+ % \@mainmattertrue
+  \pagenumbering{arabic}}
+\newcommand\backmatter{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+ % \@mainmatterfalse
+   }
+\makeatother
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=5cm,left=3cm,right=3cm,marginparwidth=2cm, headheight=127mm]{geometry}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}% removes header line
+\lhead{}
+
+\usepackage[sort&compress]{natbib}
+\usepackage[bookmarksdepth=2]{hyperref}
+\usepackage{courier}
+\usepackage{color}
+
+%Define Colors
+\definecolor{gray}{HTML}{666666}		%#666666
+\definecolor{lightblue}{HTML}{006699}		%#006699
+\definecolor{lightgreen}{HTML}{669900}		%#669900
+\definecolor{bluegreen}{HTML}{33997e}		%#33997e
+\definecolor{magenta}{HTML}{d94a7a}		%#d94a7a
+\definecolor{orange}{HTML}{e2661a}		%#e2661a
+\definecolor{purple}{HTML}{7d4793}		%#7d4793
+\definecolor{green}{HTML}{718a62}		%#718a62
+\definecolor{background}{HTML}{f6f8fa}
+
+\lstset{
+    backgroundcolor=\color{background},     % choose the background color
+    basicstyle={\footnotesize\ttfamily},      % the size of the fonts that are used for the code
+    breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+    captionpos=b,                    % sets the caption-position to bottom
+    escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+    extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+    keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+    keywordstyle = [1]\color{black}\bfseries,
+    keywordstyle = [2]\color{orange},
+    keywordstyle = [3]\color{magenta}\bfseries,
+    keywordstyle = [4]\color{bluegreen}\bfseries,
+    keywordstyle = [5]\color{blue}\bfseries,
+    keywordstyle = [6]\color{purple}\bfseries,
+    otherkeywords={{,},:,;,@,(,),|,=,!,~,<-,->,[,]},
+    keywords = [1]{{,},:,;,(,),[,]},
+    keywords = [2]{u8,u16,u32,u64,i8,i16,i32,i64,f32,f64,bool,time},
+    keywords = [3]{true,false,not,next,init,final,now,where,new},
+    keywords = [4]{type,input,output,temporal,relation},
+    keywords = [5]{<-,->,|,=,!,@,~},
+    keywords = [6]{},
+    morecomment=[l]{\#},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{lightgreen},
+    frame=tb,
+    framerule=0pt,
+    framexleftmargin=8pt,
+    framexrightmargin=8pt,
+    framextopmargin=5pt,
+    framexbottommargin=5pt,
+    xleftmargin=8pt,
+    xrightmargin=8pt,
+    numbersep=5pt,                   % how far the line-numbers are from the code
+    numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+    showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+    showstringspaces=false,          % underline spaces within strings only
+    showtabs=false,                  % show tabs within strings adding particular underscores
+    stringstyle=\color{mymauve},     % string literal style
+    tabsize=2,	                   % sets default tabsize to 2 spaces
+    %identifierstyle=\color{purple},
+}
+
+\begin{document}
+\frontmatter
+
+\input{Title/title}
+
+\input{Abstract/abstract}
+\input{Acknowledgements/acknowledgements}
+
+\tableofcontents
+\mainmatter
+
+\input{1 - Introduction/introduction}
+\input{2 - Modelling of infectious diseases/modelling_of_infectious_diseases}
+\input{3 - Stride/stride}
+\input{4 - Sampling/sampling}
+\input{5 - Domain specific language/domain_specific_language}
+\input{6 - Conclusion and future work/conclusion_and_future_work}
+
+\cleardoublepage % adjust toc numbering
+\phantomsection % Needed so hyperref refers to the right page
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{unsrt}
+\bibliography{Bib/bibliography}
+
+\input{Appendix/appendix}
+
+\end{document}

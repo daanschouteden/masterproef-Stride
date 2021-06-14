@@ -1,0 +1,323 @@
+\chapter{Domain-specific language}
+\label{chapter:dsl}
+In the previous chapters we discussed the first improvement of Stride, namely our optimisations regarding the model that resulted in faster simulation runtimes. This chapter presents the second type of improvement, which is the domain-specific language (DSL). A DSL is a computer language designed for a particular domain or set of tasks, with for example SQL for databases and HTML for web layouts. The intent of our DSL is to simplify and increase the ease of use of Stride and infectious disease modelling in general. In this chapter, we will discuss the features of EpiQL, and the components that have been implemented in the context of this thesis. EpiQL is still very much a work in progress, and not yet a functional proof of concept
+
+\section{EpiQL}
+\label{sec:epiql}
+Our DSL, which is a co-operation with and thought out by prof. dr. Stijn Vansummeren, is a rule-based language for modelling and executing simulations of transmissible diseases over time. The general idea is to express, on a higher level, how a simulation should work. Through writing declarative rules, we instruct how the simulation needs to operate. The underlying algorithm of EpiQL then uses these rules to determine the most optimal way to run our model. Then, it manipulates the model so that it can be executed in the desired fashion for the simulation. In order to use Stride or any similar model, therefore, only an abstract knowledge is required to be able to simulate transmissible diseases. This gives also the opportunity to use the optimisations that we presented, depending on what is most suitable for the different use cases. Instead of having to constantly change the model or create multiple variations of it, the user does not need to know the inner workings and can run the most optimal simulation by only defining a couple of EpiQL rules.
+\\\\
+An EpiQL program, \textit{epiq} for short, is a sequence of three elements: type definitions, relation declarations, and rules. The ordering of these elements in the sequence does not matter, so any type of element can be declared at any point in the program. All elements in EpiQL only end with a semicolon and whitespaces do not matter, therefore, the fashion in which the examples in this chapter are written is personal preference. Comments start after the `\#' symbol and are the only components that end after a newline.
+
+\subsection{Types \& type definitions}
+\label{subsec:types_and_type_definitions}
+The first thing that we will discuss are the types that can be used in EpiQL, of which there are two categories: primitive and user-defined types.
+
+\subsubsection{Primitive types}
+The primitive types are built-in types of EpiQL and can be subdivided in three different classes:
+\begin{itemize}
+    \item \textbf{Time}: the \textbf{time} type is used to represent the simulated time.
+    \item \textbf{Boolean}: the \textbf{bool} type with values \textbf{true} and \textbf{false}.
+    \item \textbf{Numeric}:
+    \begin{itemize}
+        \item unsigned 8-bit, 16-bit, 32-bit, and 64-bit integers: \textbf{u8}, \textbf{u16}, \textbf{u32}, and \textbf{u64}.
+        \item signed 8-bit, 16-bit, 32-bit, and 64-bit integers: \textbf{i8}, \textbf{i16}, \textbf{i32}, and \textbf{i64}.
+        \item floating point numbers with single and double precision: \textbf{f32} and \textbf{f64}.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{User-defined types}
+The user can define only one kind of type, which is an enumerated type. For example, Listing \ref{epiq:enumerated_types} shows how we can define different types of infections as the enumerated type \textit{Infection} with its three variants \textit{ASYMPTOMATIC} and \textit{SYMPTOMATIC}. Then, we define the enumerated type \textit{State} to express the health state of an individual, where we see that the \textit{INFECTIOUS} variant has a parameter. In an epiq it is possible for an enum variant to have zero, one, or multiple parameters of any primitive or user-defined type. Thus, when someone is infectious in our example, we can express if the infection is asymptomatic or symptomatic. Recursive enumerated types are not allowed in EpiQL, however. Concretely, it is illegal for an enum parameter to refer, directly or indirectly, to the original enum. For example, if a variant of \textit{Infection} would have \textit{State} as parameter, it is possible to have infinite recursion and therefore not allowed.
+
+\begin{lstlisting}[caption={User-defined enumerated types.}, label={epiq:enumerated_types}]
+type Infection = ASYMPTOMATIC | SYMPTOMATIC;
+
+type State = SUSCEPTIBLE | EXPOSED | INFECTIOUS(Infection) | RECOVERED;
+\end{lstlisting}
+
+\subsection{Relation declarations}
+\label{subsec:relation_declarations}
+The core of EpiQL is that it manipulates \textit{relations}, which can best be pictured as tables in relational databases. An additional feature of relations is that they are set-based, so they cannot contain duplicates. With relation declarations we define the relations that can be used in our epiq. We make a distinction between two kinds of relations: input and derived relations.
+
+\subsubsection{Input relations}
+If a relation is declared with the \textit{input} keyword, it is an input relation. These kinds of relations are given as input at the start of an epiq execution. Listing \ref{epiq:input_relations} presents an example of an input relation declaration with its attributes and their corresponding types. Here we define the \textit{Census} relation to represent the population of our simulation, which is similar to the population configuration files that are used for Stride. It has 7 attributes (or \textit{fields}) to represent the individuals by their ID, age and pool IDs.
+
+\begin{lstlisting}[caption={Input relation declaration.}, label={epiq:input_relations}]
+input relation Census(person_id: u32, age: u8, household_id: u32, 	
+					    school_id: u32, work_id: u32, primary_community: u32, 
+					    secondary_community: u32);
+\end{lstlisting}
+
+\subsubsection{Derived relations}
+Every relation that is not an input relation, is a derived relation. They can be an output and/or temporal relation, depending on the keyword declared in front of them. After an epiq has finished, the contents of all output relations, and only the output relations, constitute the output of the program and can be written to disk for example. Any other non-output relation will not have its contents outputted.
+\\\\
+Stride simulates one day after another, therefore, we say that every day is a simulation timestep. Then, the start of a simulation is timestep \textit{t0}, the first day \textit{t1}, the next day \textit{t2}, and so on. With a temporal relation we define a `family' of normal relations, one for each timestep. We demonstrate this with an example temporal relation \textit{Contact} in Listing \ref{epiq:derived_relations}, which contains two fields that represent two persons by their IDs. The relation represents two people that have contact at a certain timestep, which is logical because two people do not necessarily have contact with each other every day. Thus, the contents of \textit{Contact} are different at every timestep and since it is an output relation, all of its contents of every timestep are outputted at the end. How temporal relations need to be used, will be explained in Section \ref{subsec:temporal_rules}.
+
+\begin{lstlisting}[caption={Derived relation declaration.}, captionpos=b, label={epiq:derived_relations}]
+output temporal relation Contact(person1: u32, person2: u32);
+\end{lstlisting}
+
+\subsection{Rules}
+\label{subsec:rules}
+The last kind of EpiQL component is a rule, with which all derived relations can be manipulated as illustrated by in Listing \ref{epiq:simple_rule}. Here, we again see the input relation \textit{Census} from a previous example, which represents our population. As we previously stated, input relations are given as input at the start of an epiq execution. They contain all of their contents at the start and can never be manipulated during an epiq. Only derived relations, such as the \textit{Person} relation in our example, can be manipulated. In contrast to input relations, they are `empty' at the beginning and need to be `filled' during execution by declaring rules for them. We can think of the \textit{Person} relation as a way to define our individuals by their unique ID and their age. The rule that follows the \textit{Person} relation declaration, can be seen as a projection of the \textit{Census} relation onto the \textit{Person} relation. For every row or tuple in \textit{Census} that contains an id and age, a new row in \textit{Person} is created with those same values. The `\_' symbol is called the wildcard, and indicates an unnamed variable. It indicates that it does not matter what values the corresponding attribute has.
+
+\begin{lstlisting}[caption={A rule projecting the \textit{Census} input relation onto the derived \textit{Person} relation.}, label={epiq:simple_rule}]
+input relation Census(person_id: u32, age: u8, household_id: u32, 	
+					    school_id: u32, work_id: u32, primary_community: u32, 
+					    secondary_community: u32);
+
+relation Person(person_id: u32, age: u8);
+
+Person(id, age) <- Census(id, age, _, _, _, _, _, _);
+\end{lstlisting}
+
+The parts before and after the arrowhead are respectively called the head and body of a rule, and a relation call, such as \textit{Person(id, age)}, is called an atom. Both head and body can have multiple elements, but the head can only contain atoms. The body, however, can consist of other kinds of elements, which is shown in Listing \ref{epiq:simple_rule2}. There, we consider the relation \textit{Member} to represent an individual that is a member of a pool. We also retake the \textit{Census} relation from our previous examples. The five rules in this example insert a tuple in the \textit{Member} relation for every pool of which an individual is a member. As we have seen in the previous chapters, a person is not necessarily a member of every pool type. In our population configuration file, if someone is not a member of a school, their school ID is zero. A rule is only executed for a tuple if every element in the body is satisfied. Therefore, these rules are defined so that the \textit{Member} relation is only filled with a tuple if the person is a member of a pool, which translates to the corresponding pool ID not being zero.
+
+\begin{lstlisting}[caption={Rules filling the \textit{Member} relation to represent the pools of which someone is a member of.}, label={epiq:simple_rule2}]
+relation Member(person_id: u32, pool_id: u32);
+
+Member(pId, hid) <-
+        Census(pId, age, hid, school_id, wid, pc, sc), hid != 0;
+Member(pId, shool_id) <-
+        Census(pId, age, hid, school_id, wid, pc, sc), school_id != 0;
+Member(pId, wid) <-
+        Census(pId, age, hid, school_id, wid, pc, sc), wid != 0;
+Member(pId,pc) <-
+        Census(pId, age, hid, school_id, wid, pc, sc), pc != 0;
+Member(pId,sc) <-
+        Census(pId, age, hid, school_id, wid, pc, sc), sc != 0;
+\end{lstlisting}
+
+A side note on this example, is that we previously mentioned that all relations are set-based. This means that if someone is a member of two different pool types that have the same ID, only one tuple will exist in \textit{Member}. In order to deal with this, all pool IDs should be unique or there should be five distinct relations that are all dedicated to one particular type of pool, such as \textit{MemberHousehold}, \textit{MemberSchool}, etc.
+
+\section{Advanced features}
+\label{sec:advanced_features}
+Now that we have discussed the cornerstones of EpiQL, we can discuss the more advanced features that is has to offer.
+
+\subsection{Aggregates}
+\label{subsec:aggregates}
+An aggregate function can be used to represent a field variable in a rule. Let us say that we continue on the previous examples and that we now want to represent the size of every pool. Listing \ref{epiq:aggregate} demonstrates how the \textit{count} aggregation can be used for our \textit{PoolSize} relation to count the number of \textit{person\_id} values with the same \textit{pool\_id} in \textit{Member}. For every pool with its unique ID we have a tuple in \textit{PoolSize} that represents its size. The built-in aggregate functions in EpiQL are \textit{count}, \textit{sum}, \textit{avg}, \textit{min} and \textit{max}, and they work in a similar manner as their SQL counterparts. Note that these cannot be used in the body of a rule, only in the head.
+
+\begin{lstlisting}[caption={Aggregate count function.}, label={epiq:aggregate}]
+relation PoolSize(pool_id: u32, size: u16);
+
+PoolSize(pool_id, agg::count(person_id)) <- Member(person_id, pool_id);
+\end{lstlisting}
+
+\subsection{Joins and anti-joins}
+\label{subsec:joins_and_anti-joins}
+We stated that a head as well as a body can contain multiple elements, which gives us the ability to join and anti-join relations. Consider the example presented in Listing \ref{epiq:joins}, where we have the input relations \textit{Person}, \textit{Pool}, and \textit{Member}. Respectively they represent all the individuals and their age, all the pools and their type, and the info of which individual is a member of which pool. Now, we want to create the relation \textit{Working} to describe all the people that have work. If we think about our data from the previous chapters, we know that someone has work if they belong to a workplace pool. Additional to this, someone can also be a teacher or professor in a K-12 school or college pool, if they are respectively older than 18 and 23. In the example can be seen how we join multiple relations to create new tuples in our \textit{Working} relation, provided that they meet all the requirements in the body elements.
+\\\\
+Next to having a relation that contains all the working people in our example, we also want to represent everyone who is unemployed in \textit{NotWorking}. In order to fill this relation, we use the \textit{Person} relation that contains all the individuals, combined with an anti-join on our \textit{Working} relation. This rule says that for every person in a tuple of \textit{Person}, we create a new tuple in our relation on the condition that that person does not occur in \textit{Working}.
+
+\begin{lstlisting}[float, caption={Join and anti-join rules.}, label={epiq:joins}]
+type PoolType = HOUSEHOLD | K-12SCHOOL | COLLEGE | WORK |
+                PRIMARY_COMMUNITY | SECONDARY_COMMUNITY;
+
+input relation Person(person_id: u32, age: u8);
+input relation Pool(pool_id: u32, kind: PoolType);
+input relation Member(person_id: u32, pool_id: u32);
+
+# Join relations
+relation Working(person_id: u32);
+Working(person_id) <- 
+            Member(person_id, pool_id), Pool(pool_id, WORK);
+Working(person_id) <-
+            Member(person_id, pool_id), Pool(pool_id, K-12SCHOOL),
+            Person(person_id, age), age > 18;
+Working(person_id) <-
+            Member(person_id, pool_id), Pool(pool_id, COLLEGE),
+            Person(person_id, age), age > 23;
+
+# Anti-join relations
+relation NotWorking(person_id: u32);
+NotWorking(person_id) <- Person(person_id, _), not Working(person_id);
+\end{lstlisting}
+
+\subsection{Probabilistic rules}
+\label{subsec:probabilistic_rules}
+Next to aggregate functions, the other type of built-in functions in EpiQL are distributions. These can be used in rules to have variables whose value depends on randomness, for which there are three types of distributions: Bernoulli, uniform, and discrete distribution. A rule that contains a distribution is called a \textit{non-deterministic} or \textit{probabilistic} rule.
+
+\subsubsection{Bernoulli}
+If we want to express that something is true or not given a probability, we use the Bernoulli distribution. Listing \ref{epiq:bernoulli} presents an example with input relation \textit{Person} that represent all the persons in a simulation. Next, we create the relation \textit{InfectedAtStart} to describe all the people that will be infected at the start of the simulation. Because we want to randomly select the people that are infected at the start, we use the bernoulli distribution with probability 0.1 in our rule. This means that for every individual in a \textit{Person} tuple, we have a probability of 10\% that they are added to \textit{InfectedAtStart}. In general, we express with this rule that 10\% of the population will be infected at the start of the simulation.
+
+\begin{lstlisting}[caption={Bernoulli distribution.}, label={epiq:bernoulli}]
+input relation Person(person_id: u32, age: u8);
+relation InfectedAtStart(person_id: u32);
+
+InfectedAtStart(person_id) <- Person(person_id, _), distr::bernoulli(0.1);
+\end{lstlisting}
+
+\subsubsection{Variable binding}
+Before we continue with the other two distribution functions, we explain how we can bind a value to a variable. In a probabilistic rule, a variable can be given a value with the `$\sim$' symbol, which is demonstrated in Listing \ref{epiq:variable_binding}. As we know, the initialisation of a Stride simulation randomly determines the health characteristics of every person. In this example, we express these characteristics, such as if someone is immune or asymptomatic, in \textit{PersonHealth}. The variables \textit{infected} and \textit{asymptomatic} in our example are given the values true or false depending on their Bernoulli distributions. An important note regarding variable binding is that it can only be used to bind a value of a distribution function and nothing else.
+
+\begin{lstlisting}[caption={Variable binding.}, label={epiq:variable_binding}]
+input relation Person(person_id: u32, age: u8);
+relation PersonHealth(person_id: u32, is_immune: bool,
+                    is_asymptomatic: bool);
+
+PersonHealth(person_id, infected, asymptomatic) <- Person(person_id, _),
+                            infected ~ distr::bernoulli(0.1),
+                            asymptomatic ~ distr::bernoulli(0.05);
+\end{lstlisting}
+
+\subsubsection{Uniform}
+When we want to express multiple outcomes that all have an equal probability to occur, we use the uniform distribution. Listing \ref{epiq:uniform} presents an example where we want to define the health status of every person at the start of the simulation in \textit{StartStatus}. The rule in our example states that a person has an equal probability to start the simulation in any of the \textit{State} variants that are passed as parameters. In our example there are three parameters, which means that they all have a probability of 1/3 to be designated to a person.
+
+\begin{lstlisting}[caption={Uniform distribution.}, label={epiq:uniform}]
+type State = SUSCEPTIBLE | EXPOSED | INFECTIOUS | RECOVERED | IMMUNE;
+
+input relation Person(person_id: u32, age: u8);
+relation StartStatus(person_id: u32, status: State);
+
+StartStatus(person_id, status) <- Person(person_id, _),
+    status ~ distr::uniform(SUSCEPTIBLE, INFECTIOUS, IMMUNE);
+\end{lstlisting}
+
+\subsubsection{Discrete}
+The last built-in distribution is the discrete function, which is used to express multiple outcomes that have different probabilities of happening. The way it works is similar to the uniform distribution, with the adjustment that every outcome is followed by its probability. To demonstrate how to use this function, we consider the same relations and type of the previous example in Listing \ref{epiq:discrete}. Instead of every \textit{State} variant having the same probability, we can now determine the starting health status of every person with each its own probability. 
+
+\begin{lstlisting}[float, caption={Discrete distribution.}, label={epiq:discrete}]
+# Consider the relations of the previous example
+StartStatus(person_id, status) <- Person(person_id, _),
+    status ~ distr::discrete(SUSCEPTIBLE, 0.8, INFECTIOUS, 0.1, IMMUNE, 0.1);
+\end{lstlisting}
+
+\subsection{Temporal rules}
+\label{subsec:temporal_rules}
+To this point, we have only used rules with non-temporal relations in our examples. However, we explained that a relation can also be temporal, which means that its contents are different at every timestep. To express a temporal relation in a rule at a certain timestep, we write the symbol `@' followed by a time expression as shown by our example in Listing \ref{epiq:temporal_rules}. Here we are given the input relation \textit{ExposedPersons} that represents all the people that are infected at the start. For the entire simulation, we want to output the health statuses of every person at every timestep in \textit{Status}. We indicate the timestep at the start of the simulation with the \textit{init} keyword, which we use in our example to fill the \textit{Status} relation for timestep \textit{t0}. In the next rule, we express how someone can evolve over time in \textit{Status}. We say that someone who is \textit{EXPOSED} in \textit{Status} at timestep \textit{now}, will be \textit{INFECTIOUS} in \textit{Status} at timestep \textit{now+1}. In the last rule we can see how the uniform distribution is used to have a semi-random timestep in the head. With this rule we thus express that someone who is \textit{INFECTIOUS} at a certain timestep, will become \textit{RECOVERED} after 2 to 5 timesteps from the current one. If we translate this to Stride, it means that someone who starts exposed, will become infectious at day 1 and has an equal probability to become recovered anywhere between day 3 and 7.
+
+\begin{lstlisting}[caption={Temporal rules.}, label={epiq:temporal_rules}]
+type State = SUSCEPTIBLE | EXPOSED | INFECTIOUS | RECOVERED;
+
+input relation ExposedPersons(person_id: u32);
+output temporal relation Status(person_id: u32, state: State);
+
+Status@init(person_id, EXPOSED) <- ExposedPersons(person_id);
+
+Status@[now+1](person_id, INFECTIOUS) <- Status@now(person_id, EXPOSED);
+
+Status@[now+k](person_id, RECOVERED) <- Status@now(person_id, INFECTIOUS),
+                                k ~ distr::uniform(2,3,4,5);
+\end{lstlisting}
+
+\subsubsection{Next}
+If we now want to express what happens in the next logical timestep, given a certain timestep in the body, we can also use the \textit{next} keyword in the head instead. Listing \ref{epiq:next_keyword} shows how we can rewrite the line from the previous example, that states that someone becomes infectious the day after they are exposed. Both rules in this example thus have the same expression. However, \textit{next} can only be used when all temporal relations in the body use the same timestep, thus all the temporal variables in the body need to be the same.
+
+\begin{lstlisting}[caption={Temporal keyword `next'.}, label={epiq:next_keyword}]
+Status@[now+1](person_id, INFECTIOUS) <- Status@now(person_id, EXPOSED);
+Status@next(person_id, INFECTIOUS) <- Status@now(person_id, EXPOSED);
+\end{lstlisting}
+
+\section{Use case}
+\label{sec:use_case}
+In order to demonstrate how EpiQL can be used in practice, we present a use case in Listing \ref{epiq:use_case} that is similar to how we use Stride. Recall that the ordering inside an epiq does not matter, so our example can be written in countless ways. When we want to run a Stride simulation, the configurations must be set so the model knows what data it should use. The input relations in our use case represent some of these, such as the population in \textit{Census}, where we assume that all pool IDs are unique. The \textit{ContactVector} is similar to the contact vectors we know that represents the contact rate, given the ages of two people and the type of pool they are in. The \textit{Calendar} contains the days that represent the real life dates, as well as extra info about every day such as if it is a weekend day or holiday. It can also contain info such as if contact tracing is active on a day or social distancing, but we do not want to make our use case unnecessary detailed. The last `configurations' that we define are the enumerated types \textit{State} and \textit{PoolType}, to respectively describe the health states and the types of contact pool.
+\\\\
+Just like in Stride, we can also express how to `initialise' certain aspects of the simulation. We define the relation \textit{Member} to represent the pools of which someone is a member of, and the relation \textit{PoolInfo} to represent every pool along with its type and size. The five rules that follow these relation declarations are similar to the ones we used in Listings \ref{epiq:simple_rule2} and \ref{epiq:aggregate}, but we now simultaneously `fill in' those relations. Note that we can write \textit{PoolInfo} in the head with the aggregate count function because relations are set-based. Every tuple in this relation represents thus a unique contact pool.\\
+
+\begin{lstlisting}[float, caption={Stride use case.}, label={epiq:use_case}]
+type State = SUSCEPTIBLE | EXPOSED | INFECTIOUS | RECOVERED | IMMUNE;
+type PoolType = HOUSEHOLD | SCHOOL | WORK | PRIMARY | SECONDARY;
+input relation Census(person_id: u32, age: u8, household_id: u32, 	
+					    school_id: u32, work_id: u32, primary_community_id: u32, 
+					    secondary_community_id: u32);
+input relation ContactVector(age_p1: u8, age_p2: u8, pool: PoolType,
+                        rate: f32);
+input relation Calendar(day: time, weekend: bool, holiday: bool);
+
+relation Member(person: u32, pool: u32);
+relation PoolInfo(pool: u32, kind: PoolType, size: u32);
+Member(pId, hid), PoolInfo(hid, HOUSEHOLD, agg::count(pId)) <-
+                            Census(pId, _, hid, _, _, _, _), hid != 0;
+Member(pId, sid), PoolInfo(sid, SCHOOL, agg::count(pId)) <-
+                            Census(pId, _, _, sid, _, _, _), sid != 0;
+Member(pId, wid), PoolInfo(wid, WORK, agg::count(pId)) <-
+                            Census(pId, _, _, _, wid, _, _), wid != 0;
+Member(pId,pc), PoolInfo(pc, PRIMARY, agg::count(pId)) <-
+                            Census(pId, _, _, _, _, pc, _), pc != 0;
+Member(pId,sc), PoolInfo(sc, SECONDARY, agg::count(pId)) <-
+                            Census(pId, _, _, _, _, _, sc), sc != 0;
+
+output temporal relation Contact(p1: u32, p2: u32, pool: u32,
+                        kind: PoolType);
+Contact@day(p1, p2, pool, kind), Contact@day(p2, p1, pool, kind) <-
+        Member(p1, pool), Member(p2, pool), 
+        Census(p1, age_p1, _, _, _, _, _), Census(p2, age_p2, _, _, _, _, _),
+        ContactVector(age_p1, age_p2, kind, rate), Calendar(day, _, _),
+        PoolInfo(pool, kind, size), distr::bernoulli(rate/size),
+
+temporal relation Status(person: u32, status: State);
+temporal relation Transition(person: u32, status: State);
+output temporal relation Transmission(infectee: u32, receiver: u32);
+
+Status@init(person, status) <- Census(person, _, _, _, _, _, _);
+            status ~ distr::discrete(SUSCEPTIBLE, 0.95, EXPOSED, 0.01,
+            INFECTIOUS, 0.01, IMMUNE, 0.03);
+
+Transition@next(p1, EXPOSED), Transmission@now(p2, p1) <-
+        Status@now(p1, SUSCEPTIBLE), Status@now(p2, INFECTIOUS),
+        Contact@now(p1, p2_, _, _), distr::bernoulli(0.5);
+
+Transition@[now+k](person, INFECTIOUS) <- Status@now(person, EXPOSED),
+                                k ~ distr::uniform(2,3,4,5);
+
+Transition@[now+k](person, RECOVERED) <- Status@now(person, INFECTIOUS),
+                                k ~ distr::uniform(2,3,4,5);
+
+# Rule of inertia
+Status@t(person, status) <- Transition@t(person, status);
+Status@next(person, status) <- Status@now(person, status),
+                                not Transition@next(person, _);
+\end{lstlisting}
+
+\noindent When we run Stride using \textsc{All-to-All}, it is because we want to generate data regarding the contacts. Therefore, we define the temporal relation \textit{Contact} as \textit{output}, so its contents at every timestep are outputted. A tuple in this relation consists of the IDs of both individuals, the pool ID, and the type of the pool. Note that we do not need a field to represent the simulation day on which the contact occurs, because this can be derived from the timestep of the relation. The next rule describes how we want to calculate the contacts in our simulation. The body consists of a considerable amount of elements, but the reasoning is very intuitive if we compare it to how Stride calculates contacts. First, we specify that we use this rule for every simulation day, by `iterating' over the days in the tuples in \textit{Calendar}, and use them to denote the timestep of \textit{Contact}. Then, we describe two persons $p_{1}$ and $p_{2}$ that are members of the same \textit{pool}. In order to calculate the contact rates, we also need to know both of their ages, which can be found in \textit{Census}. Next, we describe the contact pool type and its size by using the \textit{PoolInfo} relation. We then use these variables in \textit{ContactVector}, so that we can describe the appropriate contact \textit{rate}. At last, we calculate the contact probability by dividing the contact rate by the pool size, which we use inside a Bernoulli distribution to randomly determine if there is contact. This rule thus single-handedly expresses how contacts need to be calculated. If we would want an exact replicate of the Stride contact probability calculations as described in Section \ref{subsec:contacts_and_transmissions}, we could simply expand the rule with extra elements. In the head we add two tuples for one contact, to describe that it is symmetric.
+\\\\
+The final part of our use case expresses how the health statuses of every individual evolve over time. This is also similar to previous examples, where we use the temporal \textit{Status} relation to describe the health status of every person at every timestep. We still use this relation for that purpose, but we now also use \textit{Transition} to describe the timesteps in which a person their health status changes compared to the previous timestep. The reason that we also use this relation has to do with the rule of inertia, which will be explained later on. Additionally to outputting contacts, we also want to output the transmissions that occur in \textit{Transmission}. The first rule that follows describes the initial health status of everyone by using a discrete distribution. It expresses that 1\% of the population starts \textit{EXPOSED}, 1\% starts \textit{INFECTIOUS}, 3\% is \textit{IMMUNE}, and the remaining 95\% is \textit{SUSCEPTIBLE}. In the next rule we define how transmission occurs and who becomes \textit{INFECTIOUS}, which is a transition of a health status and thus we also use \textit{Transition} in the head. We consider persons $p_{1}$ and $p_{2}$ in the body who have contact at a certain timestep in \textit{Contact}. We say that $p_{1}$ must be \textit{SUSCEPTIBLE} at that timestep and $p_{2}$ must be \textit{INFECTIOUS}. Finally, we use the Bernoulli distribution to describe that there is a 50\% chance of transmission when all of these conditions are fulfilled. Just like the contact probability, the probability of transmission can be described in a more complex way with, for example, the disease characteristics and adjustment factors. Because we added two contact tuples for one unique contact, we only need to write this one rule to express how someone becomes exposed. If we only added one tuple in \textit{Contact}, we would need to write another rule, similar to this one, where $p_{1}$ and $p_{2}$ are reversed. The next two rules are similar to these in Listing \ref{epiq:temporal_rules}, and describe that it takes 2 to 5 days, with equal probability, to evolve to \textit{INFECTIOUS} once someone is \textit{EXPOSED} and to \textit{RECOVERED} once they are \textit{INFECTIOUS}. The only difference is that we again use \textit{Transition} instead of \textit{Status} in the head.
+\\\\
+The last two rules are the rules of inertia, which we use to express that someone maintains the same state in \textit{Status} until another rule determines otherwise. If we did not write these, a person could occur in \textit{Status} at timestep \textit{t3} as \textit{INFECTIOUS}, but not appear in the subsequent timesteps until, for example, \textit{t8} where they become \textit{RECOVERED}. However, we cannot not simply state that tuples \textit{Status} at timestep \textit{now} also need to occur at timestep \textit{next}, because we would than have timesteps in which a person has two different health statuses. The reason that we use the \textit{Transition} relation, is thus to prevent this exact problem.
+\\\\
+The epiq in Listing \ref{epiq:use_case} shows that EpiQL can be used to express how a Stride simulation should run, by declaring only a small number of statements. Since EpiQL is not created specifically for Stride, it can also be used in combination with other infectious disease models.
+
+\section{Implementation}
+\label{sec:implementation_epiql}
+Since EpiQL is a new language, we need a compiler that takes an epiq as input, and generates a working model. The language in which we write our compiler is Rust\footnote{\url{https://www.rust-lang.org/}}, for which there are various reasons why we chose it. We will list the most important ones for our case:
+\begin{itemize}
+    \item Rust guarantees that any of its code does not produce any undefined behaviour by forcing the develop to write `good' code. Just by compiling Rust code, the compiler can tell if the written code is `unsafe' and therefore incorrect. Rust considers a number of things unsafe, such as data races, mutating immutable data, and dereferencing a dangling or unaligned raw pointer \cite{rust_undefined_behaviour}. Languages such as C and C++ also work with null values and pointers, which can result in undefined behaviour. In Rust, the developer is forced to know when values can be null and must explicitly handle these cases.
+    \item Unit tests are effortless to implement and maintain, which makes it easy to perform a test-driven development. We combined this with the \textit{insta} snapshot library\footnote{\url{https://github.com/mitsuhiko/insta}} to create fast, self-explanatory tests.
+    \item A common notion of compilers is that their speed, and memory cost and handling determines whether they are good. This is where Rust outperforms other languages because of how it is designed. We previously explained how rust prevents the programmer from writing unsafe code, for which the main reason is its borrow checker feature that examines the lifetimes of variables. Because of this, it can check at compile-time if there are code violations such as references that outlive the data they refer to. Is has therefore no need for garbage-collection, which would be extra overhead, because it determines during compilation when data is no longer needed and can be cleaned up.
+    \item Rust is considered a systems programming languages, which are languages that are designed to have a good performance and allow low-level hardware access, while still giving developers the ability to use high-level programming concepts \cite{systems_programming_languages}. This results in Rust having \textit{zero-cost abstractions}, which means that writing higher-level abstract code or using APIs will have the same performance as manually writing low-level code. The reason for this is that they all compile to the same assembler code.
+\end{itemize}
+Because we had no previous knowledge of Rust, the language had to be learned from scratch for this thesis. Since it is such a strict language, it was also more complicated to master than other languages such as C++ or Java. This resulted in even more time needed to fully understand the language and use it to implement our compiler. An additional difficulty is that creating a compiler is a process in which you learn more about your language the more you advance. The language has therefore changed considerably since the start, because there were things that we only realised were incorrect or sub-optimal when evolving to the next step. This results in going back and forth in the process which of course also takes up time.
+
+\subsection{Lexer}
+\label{subsec:lexer}
+The first part of our compiler is the lexer, which performs the lexical analysis, for which we used the Logos\footnote{\url{https://docs.rs/logos/0.12.0/logos/}} crate. Here, we take an entire EpiQL program and convert it into one large string of our self-defined tokens. This step checks if there are invalid characters or strings and reports such errors.
+
+\subsection{Parser}
+\label{subsec:parser}
+The parser is the next step in our process and continues on the string of tokes, to examine the order in which they appear. It then tries to figure out what the user wants to express with his code and determines if there are tokens missing or in the wrong order. This is a very complex part of the compiler, because we can never know with certainty what an error could mean. If someone would write a `(' where it does not fit, it could be because the user accidentally pressed the wrong key, or it could also be because they wanted to refer to a relation. This could be handled fairly simple, by just reporting that there was a character or string in the wrong place and stop the compilation. However, we want to give a descriptive error to the user while also continuing to parse the rest of the program. Otherwise, the user would have to recompile for every error that they made, which becomes frustrating the more errors someone makes. This presents another problem, namely what we need to do in terms of error recovery. We could simply ignore the erroneous token and continue, but the following tokens could then also be errors because we misinterpreted the first error. In the end, we implemented error handling on a relatively straightforward level, but there is thus a lot of room for improvement. The parser finishes by converting the tokens into a \textit{concrete syntax tree} (CST) with rowan\footnote{\url{https://github.com/rust-analyzer/rowan}}, to represent the structure of the program. Such trees are lossless, which means that the entire input (including irrelevant whitespaces) can be reconstructed from them. This is useful for reporting errors to the user.
+
+\subsection{Abstract syntax tree}
+\label{subsec:ast}
+We then converted the CST into an abstract syntax tree (AST), in which we only represent the essential information about the code. This step is not necessary for our compiler, but it acts as a functional layer so we can access the data that we need in the next step in a structured manner. This is because the nodes in a rowan CST are untyped, which means that we would constantly have to check what type every node has and navigating through the tree would thus be a struggle. For example, if we want to check a node that represents a relation declaration, we need to know what node represents its name and what nodes represent the attributes. Next to this, we also need to check if there exists a node that says what type of relation and if there is a node that contains the temporal keyword or not. An AST can be seen as an API for the CST, which consists of typed structures and functionality to easily access the CST.
+
+\subsection{Semantic analysis}
+\label{subsec:semantic_analysis}
+The last step that was fully implemented is the semantic analysis, where we use the AST to check the well-formedness of the code and the types of all the variables. Normally, this process also involves checking the flow of the program, but this does not apply to EpiQL since the order of an epiq does not matter. The user gets descriptive feedback about the errors that we encounter here.
+
+\subsubsection{Well-formedness}
+Checking if something is well-formed in EpiQL depends on the type of element that gets analyzed. We list some of the most straightforward examples:
+\begin{itemize}
+    \item Relations (or atoms) in a rule must refer to a relation that is declared anywhere in the epiq. The same goes for using built-in functions such as aggregations and distributions.
+    \item Atoms in a rule must have the same number of parameters as in the relation's declaration.
+    \item All names must be unique, thus a variant and a relation cannot have the same name.
+    \item The head of a rule can only contain atoms and every parameter in a head atom must also occur in the body of that rule.
+    \item We check here if it is possible to have infinite recursion between type variants, as we described in Section \ref{subsec:types_and_type_definitions}.
+    \item All mentioned types must refer to a built-in primitive or user-defined type.
+    \item Relations that are declared temporal must always be accompanied by a temporal keyword or a variable that refers to a timestep and vice versa.
+\end{itemize}
+
+\subsubsection{Type checking}
+Attributes in relation declarations are always declared with a specific type. When we write a rule, the attributes in a head atom occur at least one time in a body element. Therefore, we need to check if a variable has compatible types on all occasions in a rule. This is also a little more complicated than just checking if the types are the same, because a u8 is a sub-type of u64 but not the other way around. And when a binary numerical expression such as a multiplication is declared between an i64 and f32, we must also determine what the type of its result will be. The same goes for all of the constant numbers and booleans.
+
+\subsection{In progress}
+The remaining steps in the process of writing our compiler were not finished at the end of this thesis. A high-level intermediate representation (HIR) of the program is created during the semantic analysis of which approximately 75\% has been implemented. The HIR is somewhat similar to the AST in terms of representing EpiQL code in a structured and typed fashion, but it is not lossless because it does not have to correspond anymore with the original input. It can then be used to convert itself into a better and optimized HIR version, because we know that the epiq has passed the previous checks. The next steps will then consist of generating output code with the HIR. Optimizing EpiQL programs and including our optimisation algorithms, such as \textsc{Full-sampling (>150)}, is still a non-trivial task. More extensive research is needed to create a foolproof DSL and implement it, therefore, a new master thesis will continue on this route next year.
