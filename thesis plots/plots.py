@@ -892,8 +892,43 @@ def infected():
         )
     fig.show(config=conf)
 
+#########################################
+
+def countMatches():
+    vsc_results_path = '/home/daan/Documents/Masterproef/masterproef/VSC results/'
+    standard_path = "1-standard/"
+    filename = "all_1_times_counts.csv"
+
+    df = pd.read_csv(vsc_results_path + standard_path + filename)
+    df.index += 1
+
+    poolsizes = {}
+    for index, row in df.iterrows():
+        poolsizes[index] = row["counts_household"]
+        poolsizes[index] += row["counts_k12school"]
+        poolsizes[index] += row["counts_college"]
+        poolsizes[index] += row["counts_workplace"]
+        poolsizes[index] += row["counts_primary"]
+        poolsizes[index] += row["counts_secondary"]
+    
+    totalMatches = 0
+    for key, value in poolsizes.items():
+        if value == 0:
+            continue
+        sizeMatches = get_triangular_number(key) * value
+        totalMatches += sizeMatches
+
+    print(totalMatches)
+
+def get_triangular_number(number):
+    outcome = 0
+    for i in range(number):
+        outcome += i
+    return outcome
+
 if __name__=="__main__":
     #contact_heatmap_school()
     #contact_heatmap_work()
-    contact_heatmap_primary()
+    #contact_heatmap_primary()
     #contact_heatmap_secondary()
+    countMatches()
