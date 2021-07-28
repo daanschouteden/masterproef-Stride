@@ -1468,6 +1468,139 @@ def fsuc_pSize_all_infector():
     fig.show(config=conf)
 
 
+############################
+
+def presentation_summary():
+    df = pd.read_csv(vsc_results_path + basis_path + "all_1.csv")
+    df.index += 1
+    df = df.div(1000000)
+
+    df_og = pd.read_csv(vsc_results_path + standard_path + "all_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + ii_path + "all_1.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    df_swi = pd.read_csv(vsc_results_path + swi_path + "all_1_pType.csv")
+    df_swi.index += 1
+    df_swi = df_swi.div(1000000)
+
+    df_fs2 = pd.read_csv(vsc_results_path + old_fs_path + "all_1_pSize.csv")
+    df_fs2.index += 1
+    df_fs2 = df_fs2.div(1000000)
+
+    df_fsuc = pd.read_csv(vsc_results_path + fsuc_path + "all_1_pSize150.csv")
+    df_fsuc.index += 1
+    df_fsuc = df_fsuc.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'infector_runtimes_summary',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original (by value)", x=df.index, y=df['Infector'], mode='lines', marker=dict(color='darkblue')),
+            go.Scatter(name="Original (by reference)", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+            go.Scatter(name="Sampling with iteration", x=df_swi.index, y=df_swi['Infector'], mode='lines', marker=dict(color=approach_colors[2])),
+            go.Scatter(name="Full sampling (>150)", x=df_fs2.index, y=df_fs2['Infector'], mode='lines', marker=dict(color=approach_colors[4])),
+            #go.Scatter(name="Full sampling<br>unique contacts (>150)", x=df_fsuc.index, y=df_fsuc['Infector'], mode='lines', marker=dict(color=approach_colors[7])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,70],
+        legend={'itemsizing': 'constant'},
+    ).update_xaxes(
+        title_standoff=xtitle_standoff,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        title_standoff=ytitle_standoff,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=linewidth,
+            )
+        )
+    fig.show(config=conf)
+
+
+def presentation_summary_its():
+    df = pd.read_csv(vsc_results_path + basis_path + "opt_1.csv")
+    df.index += 1
+    df = df.div(1000000)
+
+    df_og = pd.read_csv(vsc_results_path + standard_path + "opt_1.csv")
+    df_og.index += 1
+    df_og = df_og.div(1000000)
+
+    df_ii = pd.read_csv(vsc_results_path + its_path + "ii_sort_sus.csv")
+    df_ii.index += 1
+    df_ii = df_ii.div(1000000)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': 'infector_runtimes_summary_its',
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+    print(df_og.head())
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original (by value)", x=df.index, y=df['Infector'], mode='lines', marker=dict(color='darkblue')),
+            go.Scatter(name="Original (by reference)", x=df_og.index, y=df_og['Infector'], mode='lines', marker=dict(color=approach_colors[0])),
+            go.Scatter(name="Iterative intervals<br>(sort susceptibles)", x=df_ii.index, y=df_ii['Infector'], mode='lines', marker=dict(color=approach_colors[1])),
+        ],
+    ).update_layout(
+        xaxis_title="Day",
+        yaxis_title="Time (in seconds)",
+        font_size=40,
+        legend_title=None,
+        xaxis_range=[1,100],
+        yaxis_range=[0,1.5],
+        legend={'itemsizing': 'constant'},
+    ).update_xaxes(
+        title_standoff=xtitle_standoff,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        title_standoff=ytitle_standoff,
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=linewidth,
+            )
+        )
+    fig.show(config=conf)
+
+
 
 if __name__=="__main__":
     #stats(ii_path, 'all_1')
@@ -1493,7 +1626,7 @@ if __name__=="__main__":
     #its_infections()
 
     #infector_summary()
-    infector_summary_its()
+    #infector_summary_its()
 
     #basis_standard_comparison_all()
     #basis_standard_comparison_opt()
@@ -1515,3 +1648,5 @@ if __name__=="__main__":
     #fsuc_pType_all_infector()
     #fsuc_pSize_all_infector()
     #stats(fsuc_path, 'all_1_pSize150')
+    presentation_summary()
+    presentation_summary_its()

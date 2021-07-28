@@ -905,11 +905,13 @@ def countMatches():
     poolsizes = {}
     for index, row in df.iterrows():
         poolsizes[index] = row["counts_household"]
+        '''
         poolsizes[index] += row["counts_k12school"]
         poolsizes[index] += row["counts_college"]
         poolsizes[index] += row["counts_workplace"]
         poolsizes[index] += row["counts_primary"]
         poolsizes[index] += row["counts_secondary"]
+        '''
     
     totalMatches = 0
     for key, value in poolsizes.items():

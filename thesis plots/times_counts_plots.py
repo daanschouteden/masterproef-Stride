@@ -5873,6 +5873,85 @@ def vulgariserend_artikel_typetotals():
     #plotly.offline.plot(fig)
 
 
+def presentation():
+    pooltype = 'primary'
+    mode = 'markers'
+
+    df_basis = get_basis_averages_df(pooltype)
+
+    df_or = get_standard_averages_df(pooltype)
+
+    df_ii = get_ii_averages_df(pooltype)
+
+    df_swi = get_swi_averages_df(pooltype)
+
+    df_fs = get_old_fs_pType_averages_df(pooltype)
+
+    conf = {
+        'toImageButtonOptions': {
+            'format': 'png', # one of png, svg, jpeg, webp
+            'filename': "presentation_times_counts",
+            #'height': 600,
+            #'width': 800,
+            #'scale': 1 # Multiply title/legend/axis/canvas sizes by this factor
+        }
+    }
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(name="Original (by value)", y=df_basis['averages'], mode=mode, marker=dict(color='darkblue')),
+            go.Scatter(name="Original (by reference)", y=df_or['averages'], mode=mode, marker=dict(color=approach_colors[0])),
+            #go.Scatter(name="Iterative intervals", y=df_ii['averages'], mode=mode, marker=dict(color=approach_colors[1])),
+            #go.Scatter(name="Sampling with iteration", y=df_swi['averages'], mode=mode, marker=dict(color=approach_colors[2])),
+            #go.Scatter(name="Full sampling (>150)", y=df_fs['averages'], mode=mode, marker=dict(color=approach_colors[4])),
+        ],
+    ).update_layout(
+        title={
+        'text': "Primary community infector",
+        'y':0.96,
+        'x':0.52,
+        'xanchor': 'center',
+        'yanchor': 'top'
+        },
+        xaxis_title="Pool size",
+        yaxis_title="Milliseconds",
+        font_size=40,
+        legend_title=None,
+        showlegend=True,
+        xaxis_range=[0,1450],
+        yaxis_range=[-0.05,20],
+        legend=dict(
+            yanchor="top",
+            y=0.892,
+            xanchor="left",
+            x=0.138,
+            traceorder='normal',
+            itemsizing='constant'
+        ),
+    ).update_xaxes(
+        title_standoff=xtitle_standoff,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+    ).update_yaxes(
+        title_standoff=25,
+        showgrid=True,
+        gridwidth=gridwidth,
+        gridcolor='white',
+        ticks="outside",
+        tickformat='',
+    ).update_traces(
+        line=dict(
+            width=5
+        ),
+        marker=dict(
+            size=5,
+        ),
+    )
+    fig.show(config=conf)
+
+
 if __name__=="__main__":
     #standard_all_averages()
     #standard_all_totals()
@@ -5899,5 +5978,6 @@ if __name__=="__main__":
     #fsuc_pType_vs_rest_type_totals()
     #fsuc_pSize_vs_rest_type_totals()
     #fsuc_averages_secondary_full()
-    vulgariserend_artikel()
-    vulgariserend_artikel_typetotals()
+    #vulgariserend_artikel()
+    #vulgariserend_artikel_typetotals()
+    presentation()
